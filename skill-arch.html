@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>健康关怀 · Skill 架构演示</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#06C160;--pl:#e8f8ef;--bg:#0f1117;--card:#1a1d2e;--card2:#222539;--bdr:#2a2d3e;--t:#e4e6eb;--tm:#8b8fa3;--r:12px}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC",sans-serif;background:var(--bg);color:var(--t)}
+a{color:var(--p);text-decoration:none}
+
+.app{display:flex;flex-direction:column;min-height:100vh}
+
+/* Header */
+.hd{padding:24px 32px 20px;border-bottom:1px solid var(--bdr);background:linear-gradient(135deg,#0f1117,#161828)}
+.hd h1{font-size:22px;font-weight:800;margin-bottom:4px}
+.hd h1 .hl{color:var(--p)}
+.hd p{font-size:13px;color:var(--tm);line-height:1.6}
+
+/* Tabs */
+.tabs{display:flex;gap:0;background:var(--card);border-bottom:1px solid var(--bdr);padding:0 32px;position:sticky;top:0;z-index:10}
+.tab{padding:14px 24px;font-size:13.5px;font-weight:600;color:var(--tm);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s}
+.tab:hover{color:var(--t)}
+.tab.on{color:var(--p);border-bottom-color:var(--p)}
+
+/* Panels */
+.panels{flex:1;overflow-y:auto}
+.panel{display:none;padding:28px 32px 48px}
+.panel.on{display:block}
+
+/* Section */
+.sec{margin-bottom:32px}
+.sec h2{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sec h2 .ico{width:28px;height:28px;border-radius:8px;background:rgba(6,193,96,.12);display:flex;align-items:center;justify-content:center;font-size:14px}
+.sec h3{font-size:14px;font-weight:600;color:var(--p);margin:16px 0 8px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:18px 20px;margin-bottom:12px}
+.card.green{border-color:rgba(6,193,96,.25);background:rgba(6,193,96,.04)}
+.card.orange{border-color:rgba(255,159,67,.25);background:rgba(255,159,67,.04)}
+.card.blue{border-color:rgba(64,150,255,.25);background:rgba(64,150,255,.04)}
+
+/* Flow diagram */
+.flow-v{display:flex;flex-direction:column;gap:0;align-items:center;max-width:700px}
+.flow-node{
+  width:100%;padding:14px 18px;border-radius:10px;
+  background:var(--card2);border:1px solid var(--bdr);
+  font-size:13px;line-height:1.6;position:relative;
+}
+.flow-node .fn-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:6px}
+.flow-node .fn-tag.code{background:rgba(64,150,255,.15);color:#4096ff}
+.flow-node .fn-tag.lion{background:rgba(255,214,0,.15);color:#ffd600}
+.flow-node .fn-tag.llm{background:rgba(6,193,96,.15);color:var(--p)}
+.flow-node .fn-tag.sys{background:rgba(255,107,107,.15);color:#ff6b6b}
+.flow-node.active{border-color:var(--p);box-shadow:0 0 20px rgba(6,193,96,.15)}
+.flow-arrow{width:2px;height:24px;background:var(--bdr);position:relative}
+.flow-arrow::after{content:'▼';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--tm)}
+
+/* Compare table */
+.cmp{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+.cmp th{text-align:left;padding:10px 14px;background:var(--card2);color:var(--p);font-weight:600;border-bottom:1px solid var(--bdr)}
+.cmp td{padding:10px 14px;border-bottom:1px solid var(--bdr);color:var(--t);line-height:1.6;vertical-align:top}
+.cmp tr:last-child td{border-bottom:none}
+.cmp .old{color:#ff6b6b;text-decoration:line-through;opacity:.7}
+.cmp .new{color:var(--p);font-weight:600}
+
+/* Markdown viewer */
+.md-viewer{
+  background:#0d1117;border:1px solid #21262d;border-radius:var(--r);
+  padding:20px 24px;font-family:"SF Mono","Fira Code","Menlo",monospace;
+  font-size:12.5px;line-height:1.8;color:#c9d1d9;
+  max-height:600px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;
+}
+.md-viewer::-webkit-scrollbar{width:4px}
+.md-viewer::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px}
+.md-viewer .md-h1{font-size:18px;font-weight:800;color:#fff;border-bottom:1px solid #21262d;padding-bottom:8px;margin-bottom:12px}
+.md-viewer .md-h2{font-size:15px;font-weight:700;color:#e6edf3;margin-top:20px;margin-bottom:8px}
+.md-viewer .md-h3{font-size:13px;font-weight:600;color:var(--p);margin-top:14px;margin-bottom:4px}
+.md-viewer .md-tbl{color:#8b949e;font-size:11.5px}
+.md-viewer .md-code{background:#161b22;padding:12px 16px;border-radius:6px;display:block;margin:8px 0;border:1px solid #21262d}
+.md-viewer .md-em{color:var(--p);font-weight:600;font-style:normal}
+.md-viewer .md-quote{border-left:3px solid #30363d;padding-left:12px;color:#8b949e;font-style:italic;margin:6px 0}
+.md-viewer .md-warn{color:#ff6b6b;font-weight:600}
+.md-viewer .md-hl{background:rgba(6,193,96,.12);padding:1px 4px;border-radius:3px;color:var(--p)}
+
+/* Lion config */
+.lion-box{background:#0d1117;border:1px solid #21262d;border-radius:var(--r);padding:16px 20px;font-family:"SF Mono",monospace;font-size:12px;line-height:1.7;color:#c9d1d9;overflow-x:auto}
+.lion-box .lk{color:#ff7b72}
+.lion-box .lv{color:#a5d6ff}
+.lion-box .lc{color:#8b949e}
+
+/* Scenario cards */
+.scene-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.scene-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:16px 18px;transition:all .2s}
+.scene-card:hover{border-color:rgba(6,193,96,.3);transform:translateY(-1px)}
+.scene-card .sc-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.scene-card .sc-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.scene-card .sc-nm{font-size:14px;font-weight:700}
+.scene-card .sc-id{font-size:11px;color:var(--tm);font-family:monospace}
+.scene-card .sc-bd{font-size:12px;color:var(--tm);line-height:1.7}
+.scene-card .sc-bd .lb{display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;margin-right:4px}
+.scene-card .sc-bd .lb-g{background:rgba(6,193,96,.12);color:var(--p)}
+.scene-card .sc-bd .lb-b{background:rgba(64,150,255,.12);color:#4096ff}
+.scene-card .sc-bd .lb-y{background:rgba(255,214,0,.12);color:#ffd600}
+.sc-ico.t1{background:linear-gradient(135deg,#e8f5e9,#c8e6c9)}
+.sc-ico.t2{background:linear-gradient(135deg,#fff0e6,#ffe0cc)}
+.sc-ico.t3{background:linear-gradient(135deg,#e8eaf6,#d1d5f0)}
+.sc-ico.t4{background:linear-gradient(135deg,#fef3e2,#fde6c8)}
+
+/* Tag */
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px}
+.tag-g{background:rgba(6,193,96,.12);color:var(--p)}
+.tag-b{background:rgba(64,150,255,.12);color:#4096ff}
+.tag-y{background:rgba(255,214,0,.12);color:#ffd600}
+.tag-r{background:rgba(255,107,107,.12);color:#ff6b6b}
+
+/* Note */
+.note{padding:14px 16px;border-radius:var(--r);font-size:12.5px;line-height:1.7;margin-top:12px}
+.note.info{background:rgba(64,150,255,.06);border:1px solid rgba(64,150,255,.15);color:#90bfff}
+.note.warn{background:rgba(255,214,0,.06);border:1px solid rgba(255,214,0,.15);color:#ffe066}
+.note.tip{background:rgba(6,193,96,.06);border:1px solid rgba(6,193,96,.15);color:#7dde9a}
+.note strong{font-weight:700}
+
+/* Responsive */
+@media(max-width:768px){
+  .hd,.panel{padding:16px}
+  .tabs{padding:0 16px;overflow-x:auto}
+  .tab{padding:12px 16px;font-size:12.5px;white-space:nowrap}
+  .scene-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hd">
+    <h1>健康关怀 · <span class="hl">Skill 架构演示</span></h1>
+    <p>基于 CA Skill 2.0 架构，将人性化关怀营销从硬编码迁移到 Skill 配置化方案 · 对齐 beam-ca-skill-creator 设计规范</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab on" onclick="sw(0)">架构对比</div>
+    <div class="tab" onclick="sw(1)">运行时流程</div>
+    <div class="tab" onclick="sw(2)">Skill Markdown</div>
+    <div class="tab" onclick="sw(3)">Lion 配置</div>
+    <div class="tab" onclick="sw(4)">4 场景详情</div>
+  </div>
+
+  <div class="panels">
+
+    <!-- Tab 0: 架构对比 -->
+    <div class="panel on" id="p0">
+      <div class="sec">
+        <h2><span class="ico">🔄</span>Before vs After：从硬编码到 Skill</h2>
+
+        <table class="cmp">
+          <tr><th style="width:18%">维度</th><th style="width:41%">现有方案（硬编码）</th><th style="width:41%">Skill 方案（配置化）</th></tr>
+          <tr>
+            <td><strong>话术模板</strong></td>
+            <td class="old">Java 代码中 Lion 字符串模板<br>health.care.chat.context.template</td>
+            <td class="new">Skill Markdown 中自然语言描述<br>LLM 自由发挥，更自然</td>
+          </tr>
+          <tr>
+            <td><strong>场景策略</strong></td>
+            <td class="old">每加一个场景要改 Java 代码<br>isTargetUser() 加 if-else 分支</td>
+            <td class="new">Skill Markdown 中声明场景列表<br>加场景只需更新 Lion 配置</td>
+          </tr>
+          <tr>
+            <td><strong>券文案</strong></td>
+            <td class="old">health.care.coupon.mock.text<br>固定文案模板填充</td>
+            <td class="new">Skill 指引 LLM 自然带出红包<br>"顺便给你找了个优惠~"</td>
+          </tr>
+          <tr>
+            <td><strong>语气调整</strong></td>
+            <td class="old">改模板字符串 → 发版上线</td>
+            <td class="new">改 Skill Markdown → Lion 实时生效</td>
+          </tr>
+          <tr>
+            <td><strong>搜店逻辑</strong></td>
+            <td>searchHealthPoi 并行搜索<br><span class="tag tag-b">保持不变</span></td>
+            <td>searchHealthPoi 并行搜索<br><span class="tag tag-b">代码层保持不变</span></td>
+          </tr>
+          <tr>
+            <td><strong>AB 分桶</strong></td>
+            <td>userId.hashCode() % 100<br><span class="tag tag-b">保持不变</span></td>
+            <td>userId.hashCode() % 100<br><span class="tag tag-b">代码层保持不变</span></td>
+          </tr>
+          <tr>
+            <td><strong>超时降级</strong></td>
+            <td>3秒超时 → 不出关怀<br><span class="tag tag-b">保持不变</span></td>
+            <td>3秒超时 → 不出关怀<br><span class="tag tag-b">代码层保持不变</span></td>
+          </tr>
+        </table>
+
+        <div class="note tip" style="margin-top:16px">
+          <strong>核心思路：</strong>代码层继续负责"数据获取 + 系统编排"（搜店、分桶、超时），Skill 接管"内容策略"（话术风格、语气指引、场景适配）。改话术不用发版，加场景不用写代码。
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2><span class="ico">🏗️</span>分层架构</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="card blue">
+            <div style="font-weight:700;margin-bottom:8px">🔧 代码层（Java · 不变）</div>
+            <div style="font-size:12.5px;color:var(--tm);line-height:1.8">
+              • <strong style="color:var(--t)">HealthRecommendService</strong>.isTargetUser()<br>
+              &nbsp;&nbsp;→ Horus persona / 天气API / 时间 / NLU<br>
+              • <strong style="color:var(--t)">HealthRecommendService</strong>.assignGroup()<br>
+              &nbsp;&nbsp;→ userId hash 稳定分桶<br>
+              • <strong style="color:var(--t)">IntegratedSearchService</strong>.searchHealthPoi()<br>
+              &nbsp;&nbsp;→ 并行搜关怀店，3秒超时<br>
+              • <strong style="color:var(--t)">RunnerContext</strong> 传递关怀数据<br>
+              &nbsp;&nbsp;→ healthExtraStore / healthCoupon
+            </div>
+          </div>
+          <div class="card green">
+            <div style="font-weight:700;margin-bottom:8px">📝 Skill 层（Markdown · Lion 配置）</div>
+            <div style="font-size:12.5px;color:var(--tm);line-height:1.8">
+              • <strong style="color:var(--t)">场景识别指引</strong><br>
+              &nbsp;&nbsp;→ 4 种场景的语气和禁忌<br>
+              • <strong style="color:var(--t)">话术策略</strong><br>
+              &nbsp;&nbsp;→ 过渡词、推荐风格、自然度要求<br>
+              • <strong style="color:var(--t)">红包引出方式</strong><br>
+              &nbsp;&nbsp;→ 不复述金额，自然过渡<br>
+              • <strong style="color:var(--t)">整体原则</strong><br>
+              &nbsp;&nbsp;→ 自然 > 完整，关心 > 推销
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 1: 运行时流程 -->
+    <div class="panel" id="p1">
+      <div class="sec">
+        <h2><span class="ico">⚡</span>运行时执行流程</h2>
+        <p style="font-size:13px;color:var(--tm);margin-bottom:18px">点击每个步骤查看详情。绿色节点 = Skill 层介入的环节。</p>
+
+        <div class="flow-v" id="flowChart">
+          <div class="flow-node" onclick="showDetail(0)" id="fn0">
+            <span class="fn-tag sys">入口</span>
+            <strong>用户发送 Query</strong><br>
+            <span style="color:var(--tm);font-size:12px">"帮我点个午餐"</span>
+          </div>
+          <div class="flow-arrow"></div>
+          <div class="flow-node" onclick="showDetail(1)" id="fn1">
+            <span class="fn-tag code">Java</span>
+            <strong>CentralAgentRunner → HttpToolkit.callIntegratedRecommend</strong><br>
+            <span style="color:var(--tm);font-size:12px">主搜 callTuanSearchApi 返回 3 家店</span>
+          </div>
+          <div class="flow-arrow"></div>
+          <div class="flow-node" onclick="showDetail(2)" id="fn2">
+            <span class="fn-tag code">Java</span>
+            <strong>HealthRecommendService.isTargetUser()</strong><br>
+            <span style="color:var(--tm);font-size:12px">检查 Horus persona / 天气 / 时间 / NLU → 命中 unhealthy 场景</span>
+          </div>
+          <div class="flow-arrow"></div>
+          <div class="flow-node" onclick="showDetail(3)" id="fn3">
+            <span class="fn-tag code">Java</span>
+            <strong>searchHealthPoi()（并行 · 3秒超时）</strong><br>
+            <span style="color:var(--tm);font-size:12px">query="粥 轻食 沙拉" → 返回绿野轻食 + 鸡胸肉沙拉/藜麦便当/牛油果三明治</span>
+          </div>
+          <div class="flow-arrow"></div>
+          <div class="flow-node" onclick="showDetail(4)" id="fn4" style="border-color:rgba(6,193,96,.3);background:rgba(6,193,96,.04)">
+            <span class="fn-tag llm">Skill 介入</span>
+            <strong>PoiSummary.buildHealthContext()</strong><br>
+            <span style="color:var(--tm);font-size:12px">构建 health_context 注入 prompt，附带场景类型 + 店铺 + 菜品 + 券信息</span>
+          </div>
+          <div class="flow-arrow"></div>
+          <div class="flow-node" onclick="showDetail(5)" id="fn5" style="border-color:rgba(6,193,96,.3);background:rgba(6,193,96,.04)">
+            <span class="fn-tag llm">Skill 驱动</span>
+            <strong>LLM 读取 Skill Markdown + health_context → 生成话术</strong><br>
+            <span style="color:var(--tm);font-size:12px">按 Skill 中 unhealthy 场景的语气指引，自然追加关怀段</span>
+          </div>
+          <div class="flow-arrow"></div>
+          <div class="flow-node" onclick="showDetail(6)" id="fn6">
+            <span class="fn-tag sys">输出</span>
+            <strong>正常 3 店推荐 + 关怀话术 + 关怀店卡片 + 红包券</strong><br>
+            <span style="color:var(--tm);font-size:12px">对照组（G1）不走 Step 4-6，只输出正常 3 店</span>
+          </div>
+        </div>
+
+        <div class="card" id="flowDetail" style="margin-top:20px;display:none">
+          <div id="flowDetailContent"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Skill Markdown -->
+    <div class="panel" id="p2">
+      <div class="sec">
+        <h2><span class="ico">📝</span>health_care Skill Markdown</h2>
+        <p style="font-size:13px;color:var(--tm);margin-bottom:6px">这就是配置到 Lion <code style="background:var(--card2);padding:2px 6px;border-radius:3px">skill.md.map["health_care"]</code> 的完整内容。LLM 调用 <code style="background:var(--card2);padding:2px 6px;border-radius:3px">activate_skill(skill_id="health_care")</code> 后会拿到这份"说明书"。</p>
+        <div class="note info" style="margin-bottom:14px">
+          <strong>与 explore skill 的对比：</strong>explore 是"主Skill + 4个子Skill"的渐进式披露结构，因为涉及多步 API 调用。健康关怀只需要一个主 Skill——不需要子 Skill，不需要 meituan_api_request，因为搜店/发券由代码层完成，Skill 只负责话术策略。
+        </div>
+        <div class="md-viewer" id="mdViewer"></div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Lion 配置 -->
+    <div class="panel" id="p3">
+      <div class="sec">
+        <h2><span class="ico">⚙️</span>Lion 配置变更</h2>
+        <p style="font-size:13px;color:var(--tm);margin-bottom:16px">迁移到 Skill 方案后需要在 Lion 配置中心做的变更。</p>
+
+        <h3 style="font-size:14px;font-weight:600;color:var(--p);margin-bottom:10px">1. skill.md.map 新增 key</h3>
+        <div class="lion-box">
+<span class="lc">// Lion key: skill.md.map</span>
+<span class="lc">// 新增 health_care → Skill Markdown 全文</span>
+{
+  <span class="lk">"weather_skill"</span>: <span class="lv">"# 天气技能\n..."</span>,
+  <span class="lk">"music_skill"</span>: <span class="lv">"# 音乐技能\n..."</span>,
+  <span class="lk">"explore"</span>: <span class="lv">"# 逛逛探索\n..."</span>,
+  <span class="lc">// ↓ 新增 ↓</span>
+  <span class="lk">"health_care"</span>: <span class="lv">"# 健康关怀 · 人性化主动营销\n\n你是小美..."</span>
+}
+        </div>
+
+        <h3 style="font-size:14px;font-weight:600;color:var(--p);margin:20px 0 10px">2. System Prompt 注入路由规则</h3>
+        <div class="lion-box">
+<span class="lc">// Lion key: prompt.tool_call_system_prompt</span>
+<span class="lc">// 末尾追加 Skill 路由指令（Phase 1 方案 A）</span>
+
+## Skill 路由规则
+当 health_context 被注入时（即系统检测到用户需要关怀），
+<span class="lk">优先调用 activate_skill(skill_id="health_care")</span> 获取关怀策略指引，
+然后按指引在正常推荐后追加关怀内容。
+        </div>
+
+        <h3 style="font-size:14px;font-weight:600;color:var(--p);margin:20px 0 10px">3. 可以逐步废弃的旧配置</h3>
+        <table class="cmp">
+          <tr><th>旧 Lion Key</th><th>状态</th><th>说明</th></tr>
+          <tr>
+            <td><code>health.care.chat.context.template</code></td>
+            <td><span class="tag tag-y">可废弃</span></td>
+            <td>话术模板由 Skill Markdown 替代，LLM 自由组织语言</td>
+          </tr>
+          <tr>
+            <td><code>health.care.coupon.mock.text</code></td>
+            <td><span class="tag tag-y">可废弃</span></td>
+            <td>券文案由 Skill 指引 LLM 自然引出</td>
+          </tr>
+          <tr>
+            <td><code>health.care.extra.search.query</code></td>
+            <td><span class="tag tag-b">保留</span></td>
+            <td>搜店 query 仍由代码层使用，Skill 不涉及</td>
+          </tr>
+          <tr>
+            <td><code>health.care.enable</code></td>
+            <td><span class="tag tag-b">保留</span></td>
+            <td>总开关仍由代码层控制</td>
+          </tr>
+          <tr>
+            <td><code>health.care.target.persona.keys</code></td>
+            <td><span class="tag tag-b">保留</span></td>
+            <td>触发条件仍由 Java isTargetUser() 判断</td>
+          </tr>
+        </table>
+
+        <div class="note warn" style="margin-top:16px">
+          <strong>迁移建议：</strong>Phase 1 新旧并行——保留旧的 template/mock.text 作为 fallback，Skill 层作为实验组。等验证效果后再正式切换。
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: 4 场景 -->
+    <div class="panel" id="p4">
+      <div class="sec">
+        <h2><span class="ico">🎯</span>4 场景 Skill 策略详情</h2>
+        <p style="font-size:13px;color:var(--tm);margin-bottom:16px">以下是 Skill Markdown 中各场景的具体策略，LLM 会根据 health_context 中的 scene_type 匹配对应策略。</p>
+
+        <div class="scene-grid">
+          <div class="scene-card">
+            <div class="sc-hd">
+              <div class="sc-ico t1">🍔</div>
+              <div><div class="sc-nm">不健康饮食提醒</div><div class="sc-id">scene_type: unhealthy</div></div>
+            </div>
+            <div class="sc-bd">
+              <span class="lb lb-g">触发</span>Horus persona 高油高辣占比 &gt; 60%<br>
+              <span class="lb lb-b">搜店</span>query = "粥 轻食 沙拉"<br>
+              <span class="lb lb-y">语气</span>轻松建议，不说教<br><br>
+              <strong style="color:var(--t)">过渡词：</strong>"对了，" "话说回来，"<br>
+              <strong style="color:var(--t)">示例：</strong>"看你最近几天吃了不少重口味的，今天换个清淡的试试？"<br>
+              <strong style="color:#ff6b6b">禁忌：</strong>不提"不健康""垃圾食品"，不做医学判断
+            </div>
+          </div>
+          <div class="scene-card">
+            <div class="sc-hd">
+              <div class="sc-ico t2">🌧️</div>
+              <div><div class="sc-nm">天气变化关怀</div><div class="sc-id">scene_type: weather</div></div>
+            </div>
+            <div class="sc-bd">
+              <span class="lb lb-g">触发</span>当日降温≥8°C 或降雨<br>
+              <span class="lb lb-b">搜店</span>query = "砂锅 热汤 粥"<br>
+              <span class="lb lb-y">语气</span>温暖关心<br><br>
+              <strong style="color:var(--t)">过渡词：</strong>"今天降温了，" "外面下雨呢，"<br>
+              <strong style="color:var(--t)">示例：</strong>"来碗热汤暖暖，窝着喝一碗超幸福~"<br>
+              <strong style="color:#ff6b6b">禁忌：</strong>天气信息必须准确，不说错天气状况
+            </div>
+          </div>
+          <div class="scene-card">
+            <div class="sc-hd">
+              <div class="sc-ico t3">🌙</div>
+              <div><div class="sc-nm">深夜加班关怀</div><div class="sc-id">scene_type: latenight</div></div>
+            </div>
+            <div class="sc-bd">
+              <span class="lb lb-g">触发</span>工作日 22:00-02:00 点餐<br>
+              <span class="lb lb-b">搜店</span>query = "粥 面 蒸饺 宵夜"<br>
+              <span class="lb lb-y">语气</span>体贴但不煽情<br><br>
+              <strong style="color:var(--t)">过渡词：</strong>"这个点还在忙呀，" "加班辛苦了，"<br>
+              <strong style="color:var(--t)">示例：</strong>"又好吃又不太负担，暖胃又管饱~"<br>
+              <strong style="color:#ff6b6b">禁忌：</strong>周末不说"加班"，不说"熬夜伤身"
+            </div>
+          </div>
+          <div class="scene-card">
+            <div class="sc-hd">
+              <div class="sc-ico t4">💆</div>
+              <div><div class="sc-nm">情绪关怀</div><div class="sc-id">scene_type: mood</div></div>
+            </div>
+            <div class="sc-bd">
+              <span class="lb lb-g">触发</span>NLU 检测到消极/低落语气<br>
+              <span class="lb lb-b">搜店</span>query = "粥 甜品 暖食"<br>
+              <span class="lb lb-y">语气</span>温柔陪伴，不追问<br><br>
+              <strong style="color:var(--t)">过渡词：</strong>"感觉你今天可能有点累，"<br>
+              <strong style="color:var(--t)">示例：</strong>"热乎乎的喝完心情都会好一点~"<br>
+              <strong style="color:#ff6b6b">禁忌：</strong><strong>绝对不说</strong>"你心情不好"，用"可能有点累"替代
+            </div>
+          </div>
+        </div>
+
+        <div class="note tip" style="margin-top:20px">
+          <strong>Skill 的优势体现：</strong>以上所有策略内容都在 Markdown 里，PM 想改语气、换过渡词、调整禁忌，直接在 Lion 配置中心编辑 skill.md.map 就实时生效，不需要研发排期和发版。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function sw(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('on',j===i));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('on',j===i));
+}
+
+const DETAILS=[
+  {title:'用户发送 Query',content:'用户在小美对话中输入点餐需求。<br><br>此时系统还不知道是否需要触发关怀——触发判断在后续步骤进行。'},
+  {title:'主搜推荐 3 家店',content:'<strong>callTuanSearchApi</strong> → PoiReasoning 综合评分 → 取 top 3 店铺。<br><br>这一步和没有关怀时<strong>完全一样</strong>，不受 Skill 影响。'},
+  {title:'目标用户检测',content:'<strong>HealthRecommendService.isTargetUser()</strong><br><br>遍历检查：<br>• Horus persona 标签（unhealthy_dining / health_risk）<br>• 天气 API（降温≥8°C / 降雨）<br>• 系统时间（工作日 22:00-02:00）<br>• NLU 情绪检测（消极词汇/极短句）<br><br>命中任一场景 → 进入关怀流程。<br>同时 <strong>assignGroup()</strong> 做 AB 分桶。<br><br><span class="tag tag-b">代码层</span> 这一步始终在 Java 中执行，不受 Skill 影响。'},
+  {title:'并行搜关怀店',content:'<strong>IntegratedSearchService.searchHealthPoi()</strong><br><br>在主搜的<strong>同时</strong>异步发起，使用 Lion 配置的 query（如"粥 轻食 沙拉"）搜团搜。<br><br>• 取第 1 家店 + 前 3 道菜品<br>• <strong>3 秒超时</strong>，失败则降级为对照组体验<br><br><span class="tag tag-b">代码层</span> 搜店逻辑不变。'},
+  {title:'构建 health_context（Skill 介入）',content:'<strong>PoiSummary.buildHealthContext()</strong><br><br>将搜到的关怀店铺信息打包成 health_context 注入 prompt：<br><br><div class="lion-box" style="margin:8px 0;font-size:11.5px">[健康关怀上下文]\n场景类型：unhealthy\n关怀店铺：绿野轻食\n推荐菜品：鸡胸肉沙拉、藜麦便当、牛油果三明治\n红包信息：满20减5元，轻食沙拉粥品类可用</div><br><span class="tag tag-g">Skill 层</span> 这是 Skill 开始发挥作用的地方——LLM 收到 health_context 后，会去查找 Skill 中对应 scene_type 的策略指引。'},
+  {title:'LLM 按 Skill 指引生成话术',content:'LLM 拿到两样东西：<br>① <strong>health_context</strong>（场景+店铺+菜品+券）<br>② <strong>Skill Markdown</strong>（话术策略指引）<br><br>LLM 按 Skill 中 unhealthy 场景的指引：<br>• 用 <strong>"对了，"</strong> 作为过渡词<br>• 语气轻松建议，不说教<br>• 自然带出店铺名和菜品<br>• 不复述红包金额（卡片会展示）<br><br>生成结果：<em>"对了，看你最近几天吃了不少重口味的，今天换个清淡的试试怎么样？附近有一家<strong>绿野轻食</strong>，他家的鸡胸肉沙拉和藜麦便当都很受欢迎，食材新鲜送得也快~"</em><br><br><span class="tag tag-g">Skill 层</span> 话术完全由 LLM 按 Skill 指引自由生成，不再是模板填充。'},
+  {title:'最终输出',content:'<strong>实验组（G3）输出：</strong><br>① 正常 3 店推荐<br>② 关怀话术（LLM 按 Skill 生成）<br>③ 关怀店卡片（searchHealthPoi 返回）<br>④ 红包券卡片（mock / 真实）<br><br><strong>对照组（G1）输出：</strong><br>① 正常 3 店推荐 → 结束<br><br>对照组完全不走 Step 4-6，不触发 Skill。'}
+];
+
+function showDetail(i){
+  document.querySelectorAll('.flow-node').forEach(n=>n.classList.remove('active'));
+  document.getElementById('fn'+i).classList.add('active');
+  const d=document.getElementById('flowDetail');
+  d.style.display='block';
+  document.getElementById('flowDetailContent').innerHTML=
+    '<div style="font-weight:700;margin-bottom:8px;font-size:14px">'+DETAILS[i].title+'</div>'+
+    '<div style="font-size:13px;color:var(--tm);line-height:1.8">'+DETAILS[i].content+'</div>';
+  d.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+const SKILL_MD=`<span class="md-h1"># 健康关怀 · 人性化主动营销</span>
+
+你是小美，美团外卖智能助手。当系统检测到用户可能需要关怀时，会通过 <span class="md-hl">health_context</span> 注入以下信息，你需要在正常推荐之后，自然地追加一段关怀内容。
+
+<span class="md-h2">## 场景列表</span>
+
+<span class="md-tbl">| 场景 | scene_type | 触发信号 |
+|------|-----------|---------|
+| 不健康饮食提醒 | unhealthy | Horus persona 标签命中高油高辣 |
+| 天气变化关怀 | weather | 当日降温≥8°C 或降雨 |
+| 深夜加班关怀 | latenight | 工作日 22:00-02:00 点餐 |
+| 情绪关怀 | mood | NLU 检测到消极/低落语气 |</span>
+
+<span class="md-h2">## health_context 格式</span>
+
+系统会注入如下结构化上下文（你不需要调用任何工具获取，它会直接出现在 prompt 中）：
+
+<span class="md-code">[健康关怀上下文]
+场景类型：\${scene_type}
+关怀店铺：\${store_name}
+推荐菜品：\${products}
+红包信息：\${coupon_text}</span>
+
+<span class="md-h2">## 输出要求</span>
+
+<span class="md-h3">### 1. 先完成正常推荐</span>
+
+正常回答用户的点餐需求，推荐 3 家店铺（由主搜返回）。这部分和没有关怀时完全一样，不要提前透露关怀意图。
+
+<span class="md-h3">### 2. 自然追加关怀段</span>
+
+在正常推荐之后，<span class="md-em">用一段自然过渡的话</span>引出关怀店铺。不要生硬分段，要像朋友聊天一样带出来。
+
+各场景的语气指引：
+
+<span class="md-h3">unhealthy（不健康饮食）</span>
+- 过渡词示例："对了，""话说回来，""顺便说一嘴，"
+- 语气：轻松建议，不是说教。"换个清淡的试试"而非"你应该少吃油炸"
+- <span class="md-warn">禁忌：不要提"不健康""垃圾食品"等负面词，不做医学判断</span>
+
+<span class="md-h3">weather（天气关怀）</span>
+- 过渡词示例："今天降温了，""外面下雨呢，"
+- 语气：温暖关心。"来碗热汤暖暖""窝着喝一碗超幸福"
+- <span class="md-warn">禁忌：天气信息必须准确，不要说错天气状况</span>
+
+<span class="md-h3">latenight（深夜加班）</span>
+- 过渡词示例："这个点还在忙呀，""加班辛苦了，"
+- 语气：体贴但不过度煽情。"又好吃又不太负担"
+- <span class="md-warn">禁忌：周末/节假日不要说"加班"；不要说"熬夜伤身"</span>
+
+<span class="md-h3">mood（情绪关怀）</span>
+- 过渡词示例："感觉你今天可能有点累，""那就不纠结啦，"
+- 语气：温柔陪伴，不追问原因。"热乎乎的喝完心情都会好一点"
+- <span class="md-warn">禁忌：绝对不要说"你心情不好""你是不是不开心"，用"可能有点累"等委婉表达</span>
+
+<span class="md-h3">### 3. 引出店铺和菜品</span>
+
+用 health_context 中的 \${store_name} 和 \${products} 自然融入话术。示例：
+
+<span class="md-quote">&gt; 附近有一家<strong>\${store_name}</strong>，他家的\${products}很受欢迎，食材新鲜送得也快~</span>
+
+不要机械地列举，要像在安利朋友一样带出来。
+
+<span class="md-h3">### 4. 红包信息</span>
+
+红包信息会由系统自动渲染为红包卡片，你只需要在话术中自然提一句即可。示例：
+
+<span class="md-quote">&gt; "顺便给你找了个优惠~"
+&gt; "小美请你一杯奶茶钱~"</span>
+
+不需要你复述红包的具体金额和规则（卡片会展示），只要让过渡自然。
+
+<span class="md-h2">## 整体原则</span>
+
+1. <span class="md-em">自然 > 完整</span>：宁可少说一句，也不要生硬堆砌信息
+2. <span class="md-em">关心 > 推销</span>：你是在关心用户，不是在推销店铺
+3. <span class="md-em">克制 > 热情</span>：一次只关怀一个场景，不要同时触发多个
+4. <span class="md-em">降级友好</span>：如果 health_context 中某个字段为空，就跳过对应内容，不要提示错误`;
+
+document.getElementById('mdViewer').innerHTML=SKILL_MD;
+</script>
+</body>
+</html>
