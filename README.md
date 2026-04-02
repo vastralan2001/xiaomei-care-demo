@@ -7,6 +7,7 @@
 | **H5 移动端** | [点击体验](https://vastralan2001.github.io/xiaomei-care-demo/) | 手机扫码，模拟真实对话体验 |
 | 桌面完整版 | [点击体验](https://vastralan2001.github.io/xiaomei-care-demo/desktop.html) | 含策略说明面板，适合投屏评审 |
 | 研发配置表 | [点击查看](https://vastralan2001.github.io/xiaomei-care-demo/config-table.html) | 4 场景触发规则 / Query / 券配置详表 |
+| **Skill 架构演示** | [点击查看](https://vastralan2001.github.io/xiaomei-care-demo/skill-arch.html) | Skill 迁移方案：架构对比 / 运行时流程 / Markdown 内容 |
 
 ## 使用说明
 
@@ -54,3 +55,13 @@
 核心链路：`Query → CentralAgentRunner → HttpToolkit → callTuanSearchApi(主搜3店) + searchHealthPoi(并行关怀店) → PoiSummary + health_context 注入 → LLM 生成话术 + 券 mock`
 
 详细实现方案见[研发配置表](https://vastralan2001.github.io/xiaomei-care-demo/config-table.html)。
+
+## Skill 迁移方案
+
+基于 CA Skill 2.0 架构（`ca-skill` 分支），将关怀话术从硬编码迁移到 Skill 配置化：
+
+- **代码层不变**：搜店、分桶、超时降级仍在 Java 中
+- **Skill 层接管**：话术策略、语气指引、场景适配改为 Markdown 配置
+- **好处**：改话术不用发版，加场景不用写代码
+
+详见 [Skill 架构演示](https://vastralan2001.github.io/xiaomei-care-demo/skill-arch.html) 和 [health_care Skill Markdown](https://github.com/vastralan2001/xiaomei-care-demo/blob/main/skill-health-care.md)。
