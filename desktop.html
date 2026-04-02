@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小美人性化营销 · 外卖对话场景原型PRD v2</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#06C160;--primary-light:#e8f8ef;
+  --bg:#0f1117;--sidebar-bg:#161822;--card-bg:#1e2030;
+  --phone-bg:#fff;--text:#e4e6eb;--text-muted:#8b8fa3;--border:#2a2d3e;
+  --user-bubble:#ffe066;--user-text:#333;
+  --bot-bubble:#f0f2f5;--bot-text:#1a1a2e;
+  --coupon-a:#ff6b6b;--coupon-b:#ee5a24;
+  --r:12px;--rs:8px;
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+
+/* Layout */
+.app{display:grid;grid-template-columns:260px 1fr 360px;height:100vh}
+
+/* Sidebar */
+.sb{background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sb-hd{padding:20px 16px 14px;border-bottom:1px solid var(--border)}
+.sb-hd h1{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.sb-hd p{font-size:11px;color:var(--text-muted);line-height:1.5}
+.sb-list{flex:1;overflow-y:auto;padding:8px}
+.sb-list::-webkit-scrollbar{width:3px}
+.sb-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.st{display:flex;align-items:flex-start;gap:10px;padding:12px;margin-bottom:4px;border-radius:var(--r);cursor:pointer;transition:all .22s;border:1px solid transparent;position:relative}
+.st:hover{background:rgba(6,193,96,.06);border-color:rgba(6,193,96,.15)}
+.st.on{background:rgba(6,193,96,.1);border-color:var(--primary)}
+.st.on::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--primary);border-radius:0 2px 2px 0}
+.st-ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:var(--card-bg)}
+.st.on .st-ic{background:rgba(6,193,96,.15)}
+.st-info{flex:1;min-width:0}
+.st-info h3{font-size:12.5px;font-weight:600;color:#fff;margin-bottom:2px}
+.st-info p{font-size:10.5px;color:var(--text-muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.st.on .st-info h3{color:var(--primary)}
+
+/* Arch badge */
+.sb-arch{padding:12px 16px;border-top:1px solid var(--border);background:rgba(6,193,96,.04)}
+.sb-arch h4{font-size:11px;color:var(--primary);margin-bottom:6px;font-weight:600}
+.sb-arch .flow{font-size:10px;color:var(--text-muted);line-height:1.8}
+.sb-arch .flow .arr{color:var(--primary);margin:0 3px}
+
+/* Phone area */
+.ph-area{display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
+.ph-shell{width:390px;height:calc(100vh - 40px);max-height:860px;background:#000;border-radius:44px;padding:12px;box-shadow:0 0 0 2px #333,0 20px 60px rgba(0,0,0,.5);display:flex;flex-direction:column;position:relative}
+.ph-notch{width:126px;height:28px;background:#000;border-radius:0 0 18px 18px;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10}
+.ph-scr{flex:1;background:var(--phone-bg);border-radius:34px;display:flex;flex-direction:column;overflow:hidden}
+
+/* Top bar */
+.ph-top{background:#fff;padding:50px 16px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;flex-shrink:0;z-index:5}
+.ph-top .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#06C160,#00d4aa);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;font-weight:700}
+.ph-top .nm{font-size:14.5px;font-weight:600;color:#1a1a2e}
+.ph-top .tg{font-size:10px;background:var(--primary-light);color:var(--primary);padding:2px 8px;border-radius:10px;margin-left:auto}
+
+/* AB toggle bar */
+.ab-bar{
+  display:flex;align-items:center;gap:0;flex-shrink:0;
+  background:#f8f9fa;border-bottom:1px solid #eee;
+}
+.ab-btn{
+  flex:1;padding:8px 0;text-align:center;font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .2s;color:#999;position:relative;
+  border:none;background:none;
+}
+.ab-btn.ctrl.on{color:#666;background:#fff}
+.ab-btn.ctrl.on::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:#999;border-radius:1px}
+.ab-btn.treat.on{color:var(--primary);background:#fff}
+.ab-btn.treat.on::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--primary);border-radius:1px}
+.ab-btn .ab-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.ab-btn.ctrl .ab-dot{background:#bbb}
+.ab-btn.treat .ab-dot{background:var(--primary)}
+
+/* State banner */
+.st-ban{background:linear-gradient(135deg,#fff9e6,#fff3cc);padding:8px 14px;font-size:11px;color:#b8860b;display:flex;align-items:center;gap:6px;flex-shrink:0;border-bottom:1px solid #f5e6b8}
+.st-ban .dt{width:5px;height:5px;border-radius:50%;background:#f0a500;flex-shrink:0}
+
+/* Chat */
+.chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.chat::-webkit-scrollbar{width:3px}
+.chat::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px}
+
+.msg{display:flex;gap:7px;max-width:92%;animation:mIn .35s ease}
+.msg.u{align-self:flex-end;flex-direction:row-reverse}
+.bbl{padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.6;word-break:break-word}
+.msg.u .bbl{background:var(--user-bubble);color:var(--user-text);border-bottom-right-radius:4px}
+.msg.b .bbl{background:var(--bot-bubble);color:var(--bot-text);border-bottom-left-radius:4px}
+.bbl strong{color:#06C160;font-weight:600}
+.b-av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#06C160,#00d4aa);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;flex-shrink:0;margin-top:2px}
+
+/* Typing */
+.typ{display:flex;gap:4px;padding:7px 13px;align-self:flex-start;margin-left:34px}
+.typ span{width:6px;height:6px;border-radius:50%;background:#ccc;animation:tDot 1.2s infinite}
+.typ span:nth-child(2){animation-delay:.2s}
+.typ span:nth-child(3){animation-delay:.4s}
+
+/* Divider label */
+.div-label{align-self:center;font-size:10px;color:#bbb;background:#f8f8f8;padding:3px 12px;border-radius:10px;margin:4px 0}
+
+/* Mini POI cards (the normal 3) */
+.poi-row{margin-left:34px;display:flex;flex-direction:column;gap:6px;max-width:300px;animation:mIn .35s ease}
+.poi-mini{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #eee;border-radius:10px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);cursor:default}
+.poi-mini .pm-rank{width:22px;height:22px;border-radius:6px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#999;flex-shrink:0}
+.poi-mini .pm-rank.r1{background:#fff7e6;color:#f0a500}
+.poi-mini .pm-body{flex:1;min-width:0}
+.poi-mini .pm-name{font-size:12.5px;font-weight:600;color:#1a1a2e;margin-bottom:2px;display:flex;align-items:center;gap:4px}
+.poi-mini .pm-name .star{font-size:10px;color:#f0a500}
+.poi-mini .pm-meta{font-size:10px;color:#999}
+.poi-mini .pm-price{font-size:12px;font-weight:700;color:var(--coupon-a);flex-shrink:0}
+
+/* Extra POI card — same visual language as normal poi-mini */
+.poi-extra-row{margin-left:34px;display:flex;flex-direction:column;gap:0;max-width:300px;animation:mIn .35s ease}
+.poi-extra-card{
+  background:#fff;border:1.5px solid rgba(6,193,96,.25);border-radius:10px;
+  box-shadow:0 2px 10px rgba(6,193,96,.08);overflow:hidden;
+}
+.poi-extra-card .pe-main{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.poi-extra-card .pe-emo{
+  width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+}
+.poi-extra-card[data-t="health"] .pe-emo{background:linear-gradient(135deg,#e8f5e9,#c8e6c9)}
+.poi-extra-card[data-t="warm"] .pe-emo{background:linear-gradient(135deg,#fff0e6,#ffe0cc)}
+.poi-extra-card[data-t="night"] .pe-emo{background:linear-gradient(135deg,#e8eaf6,#d1d5f0)}
+.poi-extra-card[data-t="comfort"] .pe-emo{background:linear-gradient(135deg,#fef3e2,#fde6c8)}
+.poi-extra-card .pe-body{flex:1;min-width:0}
+.poi-extra-card .pe-nm{font-size:12.5px;font-weight:700;color:#1a1a2e;display:flex;align-items:center;gap:4px}
+.poi-extra-card .pe-nm .star{font-size:10px;color:#f0a500;font-weight:400}
+.poi-extra-card .pe-meta{font-size:10px;color:#999;margin-top:2px}
+.poi-extra-card .pe-badges{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
+.poi-extra-card .pe-badge{display:inline-flex;align-items:center;gap:2px;padding:1px 6px;border-radius:3px;font-size:9.5px;font-weight:600}
+.poi-extra-card .pe-badge.green{background:rgba(6,193,96,.1);color:var(--primary);border:1px solid rgba(6,193,96,.15)}
+.poi-extra-card .pe-badge.red{background:rgba(255,87,34,.1);color:#ff5722;border:1px solid rgba(255,87,34,.15)}
+.poi-extra-card .pe-dishes{padding:0 10px 8px;display:flex;flex-direction:column;gap:4px;border-top:1px solid #f5f5f5;margin-top:0;padding-top:6px}
+.poi-extra-card .pe-di{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:#fafbfc;border-radius:6px}
+.poi-extra-card .pe-di-name{font-size:11px;color:#333;font-weight:500}
+.poi-extra-card .pe-di-price{font-size:11px;color:#ff5722;font-weight:700}
+
+/* Coupon (外卖红包) */
+.cpn-wrap{margin-left:34px;max-width:300px;animation:mIn .35s ease}
+.cpn{
+  border-radius:14px;overflow:hidden;position:relative;
+  background:#fff;border:1px solid #ffe0d0;
+  box-shadow:0 3px 16px rgba(255,87,34,.1);
+}
+.cpn-top{
+  background:linear-gradient(135deg,#ff6f3c,#ff4517);
+  padding:16px 16px 14px;color:#fff;position:relative;overflow:hidden;
+}
+.cpn-top::before{
+  content:'';position:absolute;right:-20px;top:-20px;
+  width:80px;height:80px;border-radius:50%;
+  background:rgba(255,255,255,.06);
+}
+.cpn-top::after{
+  content:'';position:absolute;right:20px;bottom:-10px;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,.04);
+}
+.cpn-label{font-size:10px;font-weight:600;background:rgba(255,255,255,.2);display:inline-block;padding:2px 8px;border-radius:4px;margin-bottom:8px}
+.cpn-price{display:flex;align-items:flex-end;gap:2px;margin-bottom:6px}
+.cpn-price .sym{font-size:16px;font-weight:700;line-height:1;margin-bottom:3px}
+.cpn-price .val{font-size:40px;font-weight:800;line-height:1;letter-spacing:-2px}
+.cpn-price .unit{font-size:12px;opacity:.85;margin-left:8px;margin-bottom:4px}
+.cpn-desc{font-size:12.5px;font-weight:500;line-height:1.5;opacity:.95}
+.cpn-store{font-size:10.5px;opacity:.7;margin-top:4px}
+.cpn-cut{display:flex;align-items:center;height:20px;margin:0}
+.cpn-cut::before,.cpn-cut::after{
+  content:'';width:10px;height:20px;flex-shrink:0;
+  background:var(--phone-bg);
+}
+.cpn-cut::before{border-radius:0 10px 10px 0;margin-left:-1px}
+.cpn-cut::after{border-radius:10px 0 0 10px;margin-right:-1px}
+.cpn-cut-line{flex:1;border-top:2px dashed #ffe0d0}
+.cpn-bot{padding:12px 16px;display:flex;align-items:center;gap:10px}
+.cpn-rules{flex:1;min-width:0}
+.cpn-rules .cpn-r{font-size:10px;color:#999;line-height:1.7;display:flex;align-items:baseline;gap:4px}
+.cpn-rules .cpn-r::before{content:'·';color:#ccc;font-weight:700;flex-shrink:0}
+.cpn-btn{
+  padding:8px 20px;
+  background:linear-gradient(135deg,#ff6f3c,#ff4517);
+  color:#fff;border:none;border-radius:22px;
+  font-size:12.5px;font-weight:700;cursor:pointer;
+  flex-shrink:0;transition:all .2s;white-space:nowrap;
+  box-shadow:0 3px 10px rgba(255,69,23,.3);
+}
+.cpn-btn:hover{transform:scale(1.04);box-shadow:0 4px 16px rgba(255,69,23,.4)}
+.cpn-btn.ok{background:#e8e8e8;color:#aaa;box-shadow:none;cursor:default;pointer-events:none}
+
+/* Query bar */
+.qbar{padding:8px 10px;background:#fff;border-top:1px solid #f0f0f0;display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.qc{padding:5px 11px;background:#f5f5f5;border:1px solid #e8e8e8;border-radius:18px;font-size:11px;color:#555;cursor:pointer;transition:all .2s;white-space:nowrap}
+.qc:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+.qc.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+/* Right panel */
+.rp{background:var(--sidebar-bg);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.rp-hd{padding:18px 18px 12px;border-bottom:1px solid var(--border)}
+.rp-hd h2{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
+.rp-hd p{font-size:10.5px;color:var(--text-muted)}
+.rp-bd{flex:1;overflow-y:auto;padding:14px 18px}
+.rp-bd::-webkit-scrollbar{width:3px}
+.rp-bd::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* Scene title */
+.sc-title{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.sc-title .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(6,193,96,.1)}
+.sc-title .tx h3{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.sc-title .tx p{font-size:10.5px;color:var(--text-muted)}
+
+/* Strategy sections */
+.ss{margin-bottom:16px}
+.ss h4{font-size:11.5px;font-weight:700;color:var(--primary);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.ss h4 .si{width:18px;height:18px;border-radius:5px;background:rgba(6,193,96,.12);display:flex;align-items:center;justify-content:center;font-size:10px}
+.sc{background:var(--card-bg);border-radius:var(--rs);padding:10px 12px;margin-bottom:6px;font-size:11px;color:var(--text-muted);line-height:1.7}
+.sc .lb{display:inline-block;font-size:9.5px;font-weight:600;padding:2px 5px;border-radius:3px;margin-right:5px;background:rgba(6,193,96,.12);color:var(--primary)}
+.sc .lb-w{background:rgba(255,107,107,.12);color:#ff6b6b}
+.sc .lb-b{background:rgba(64,150,255,.12);color:#4096ff}
+.sc .lb-y{background:rgba(255,214,0,.12);color:#ffd600}
+
+/* Code snippet */
+.code-box{background:#0d1117;border:1px solid #21262d;border-radius:var(--rs);padding:10px 12px;margin-bottom:6px;font-family:"SF Mono","Fira Code",monospace;font-size:10.5px;color:#c9d1d9;line-height:1.6;overflow-x:auto;white-space:pre-wrap}
+.code-box .ck{color:var(--primary)}
+.code-box .cv{color:#ffa657}
+.code-box .cm{color:#8b949e}
+
+/* Dev notes */
+.dn{margin-top:12px;padding:12px;background:rgba(255,214,0,.06);border:1px solid rgba(255,214,0,.15);border-radius:var(--rs)}
+.dn h4{font-size:11px;color:#ffd600;margin-bottom:5px}
+.dn p{font-size:10.5px;color:var(--text-muted);line-height:1.6}
+
+/* Animations */
+@keyframes mIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tDot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sb">
+    <div class="sb-hd">
+      <h1>小美 · 人性化主动营销</h1>
+      <p>外卖对话场景 · 4大关怀场景<br>统一模式：正常推3店 → 后挂1店 + 发券 + 改话术</p>
+    </div>
+    <div class="sb-list" id="sList"></div>
+    <div class="sb-arch">
+      <h4>Central Agent 链路</h4>
+      <div class="flow">
+        Query<span class="arr">→</span>CentralAgentRunner<span class="arr">→</span>HttpToolkit<br>
+        <span class="arr">→</span>callTuanSearchApi(主搜3店)<br>
+        <span class="arr">→</span>searchHealthPoi(并行·关怀店)<br>
+        <span class="arr">→</span>PoiSummary + health_context注入<br>
+        <span class="arr">→</span>LLM生成话术 + 券mock
+      </div>
+    </div>
+  </div>
+
+  <!-- Phone -->
+  <div class="ph-area">
+    <div class="ph-shell">
+      <div class="ph-notch"></div>
+      <div class="ph-scr">
+        <div class="ph-top">
+          <div class="av">美</div>
+          <div class="nm">小美</div>
+          <div class="tg">外卖助手</div>
+        </div>
+        <div class="ab-bar">
+          <button class="ab-btn ctrl" onclick="setAB('ctrl')"><span class="ab-dot"></span>对照组 (G1)</button>
+          <button class="ab-btn treat on" onclick="setAB('treat')"><span class="ab-dot"></span>实验组 (G3)</button>
+        </div>
+        <div class="st-ban" id="sBan"><span class="dt"></span><span id="sTxt"></span></div>
+        <div class="chat" id="chat"></div>
+        <div class="qbar" id="qBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="rp">
+    <div class="rp-hd">
+      <h2>策略说明 · 开发对齐</h2>
+      <p>对齐 central agent 链路 · PRD交接</p>
+    </div>
+    <div class="rp-bd" id="rBd"></div>
+  </div>
+</div>
+
+<script>
+const S = [
+  {
+    id:'unhealthy', icon:'🍔', name:'不健康饮食提醒',
+    stateShort:'近7天高油高辣占比>60%',
+    userState:'过去7天点了3次麻辣烫、2次炸鸡，高油高辣占比超60%',
+    query:'帮我点个午餐',
+    altQ:['帮我点个午餐','中午吃什么','推荐个外卖'],
+    botNormal:'帮你找了几家口碑不错的午餐，看看想吃哪个~',
+    normalPois:[
+      {rank:1,name:'张记麻辣烫',stars:'4.6',meta:'月售5200+ · 22min',price:'¥18起'},
+      {rank:2,name:'炸鸡工坊',stars:'4.5',meta:'月售3800+ · 25min',price:'¥22起'},
+      {rank:3,name:'花田日料',stars:'4.8',meta:'月售1200+ · 30min',price:'¥35起'}
+    ],
+    botCare:'对了，看你最近几天吃了不少重口味的，今天换个清淡的试试怎么样？附近有一家<strong>绿野轻食</strong>，他家的鸡胸肉沙拉和藜麦便当都很受欢迎，食材新鲜送得也快~',
+    extraPoi:{
+      theme:'health',emoji:'🥗',name:'绿野轻食',rating:'4.8',
+      badge:'健康推荐',meta:'月售2000+ | 配送25min | 起送¥15',
+      dishes:[{n:'鸡胸肉沙拉',p:'22'},{n:'藜麦便当',p:'28'},{n:'牛油果三明治',p:'25'}]
+    },
+    coupon:{name:'健康美食专属红包',amt:5,cond:'满20元可用',store:'绿野轻食',desc:'点这家店小美送你5块钱红包，轻食沙拉粥品类商家通用',scope:'轻食 / 沙拉 / 粥品类商家可用',exp:'领取后3天内有效'},
+    strategy:{
+      trigger:'Horus persona 标签命中：personaKey 包含 unhealthy_dining / health_risk，或 personaValue 包含 "不健康饮食" / "高频不健康外卖"',
+      data:'Horus persona — longPersonaDetailList，遍历 key/value 子串匹配（OR逻辑）',
+      searchQ:'health.care.extra.search.query = "粥 轻食 沙拉"（Lion可配）',
+      template:'health.care.chat.context.template:\n"另外附近还有一家${store_name}，${products}，最近天气变化大，想来点清淡的可以试试～"',
+      couponConf:'health.care.coupon.mock.text:\n"给你准备了一张健康美食专属券，满20减5元，轻食沙拉粥品类可用，3天有效～"',
+      risk:'避免让用户感觉被"监控"饮食，话术需自然柔和，不做医学判断',
+      implNote:'Phase 1已有实现基础（G1/G3分桶），本场景复用现有HealthRecommendService + persona匹配逻辑'
+    }
+  },
+  {
+    id:'weather', icon:'🌧️', name:'天气变化关怀',
+    stateShort:'当日降温>8°C / 下雨天',
+    userState:'当日气温骤降10°C，外面正在下雨',
+    query:'帮我点个外卖',
+    altQ:['帮我点个外卖','点个外卖吧','好冷想吃点热的'],
+    botNormal:'好的，帮你找了几家附近评价不错的~',
+    normalPois:[
+      {rank:1,name:'杨国福麻辣烫',stars:'4.5',meta:'月售6000+ · 20min',price:'¥15起'},
+      {rank:2,name:'老王炒饭',stars:'4.3',meta:'月售4500+ · 18min',price:'¥12起'},
+      {rank:3,name:'味千拉面',stars:'4.6',meta:'月售2800+ · 25min',price:'¥28起'}
+    ],
+    botCare:'今天降温了不少，出门记得加衣服哦！这种天气来碗热汤最舒服了，附近有一家<strong>老张砂锅粥</strong>，招牌砂锅粥和菌菇鸡汤都很暖胃，下雨天窝着喝一碗超幸福~',
+    extraPoi:{
+      theme:'warm',emoji:'🍜',name:'老张砂锅粥',rating:'4.7',
+      badge:'暖胃推荐',meta:'月售1500+ | 配送30min | 起送¥18',
+      dishes:[{n:'招牌砂锅粥',p:'26'},{n:'菌菇鸡汤',p:'32'},{n:'排骨煲',p:'35'}]
+    },
+    coupon:{name:'暖冬暖胃红包',amt:5,cond:'满25元可用',store:'老张砂锅粥',desc:'天冷了来碗热的，小美请你5块钱，粥汤火锅类商家通用',scope:'粥 / 汤 / 火锅品类商家可用',exp:'领取后3天内有效'},
+    strategy:{
+      trigger:'天气API信号：当日降温≥8°C，或降雨/降雪/大风等恶劣天气（需新增天气数据源接入）',
+      data:'实时天气接口（温度变化、降水概率） + 用户定位城市/区域',
+      searchQ:'动态调整 extra.search.query = "砂锅 热汤 粥"（按天气类型切换）',
+      template:'需新增模板：\n"今天降温不少，${store_name}的${products}很适合暖暖身子～"',
+      couponConf:'券文案动态化：\n"暖冬专属券，满25减5元，粥/汤/火锅品类可用，3天有效～"',
+      risk:'天气信息需实时准确，不同区域差异大；避免阳光明媚时说"下雨"',
+      implNote:'需在HealthRecommendService中新增天气触发条件分支；Lion新增weather相关key'
+    }
+  },
+  {
+    id:'latenight', icon:'🌙', name:'深夜加班关怀',
+    stateShort:'工作日 22:00后点餐',
+    userState:'工作日23:30点餐，深夜加班场景',
+    query:'饿了，帮我点个宵夜',
+    altQ:['饿了，帮我点个宵夜','加班好饿','有什么宵夜推荐'],
+    botNormal:'这个点还在忙呀！帮你看看附近还在营业的~',
+    normalPois:[
+      {rank:1,name:'麦当劳(24h)',stars:'4.4',meta:'月售8000+ · 15min',price:'¥20起'},
+      {rank:2,name:'烧烤大排档',stars:'4.3',meta:'月售3200+ · 22min',price:'¥25起'},
+      {rank:3,name:'螺蛳粉王',stars:'4.5',meta:'月售2600+ · 20min',price:'¥16起'}
+    ],
+    botCare:'深夜吃太油腻容易胃不舒服，给你找了一家又好吃又不太负担的——<strong>粥小仙</strong>的红枣小米粥和蒸饺组合超适合当宵夜，暖胃又管饱~',
+    extraPoi:{
+      theme:'night',emoji:'🌟',name:'粥小仙',rating:'4.8',
+      badge:'深夜营业',meta:'月售2500+ | 配送20min | 营业至凌晨2点',
+      dishes:[{n:'红枣小米粥',p:'14'},{n:'蒸饺(8只)',p:'18'},{n:'银耳莲子羹',p:'12'}]
+    },
+    coupon:{name:'深夜犒劳红包',amt:4,cond:'满18元可用',store:'粥小仙',desc:'加班辛苦了，小美请你4块钱宵夜，全品类商家可用',scope:'全品类商家可用 · 仅限22:00-02:00',exp:'仅限今日使用'},
+    strategy:{
+      trigger:'时间条件：工作日（周一至周五）22:00-02:00时段点餐',
+      data:'系统时间 + 日历API（工作日/周末/节假日判断）',
+      searchQ:'extra.search.query = "粥 面 蒸饺 宵夜" + 过滤"当前营业中"',
+      template:'需新增模板：\n"深夜来碗${store_name}的${products}，暖胃又不会太负担～"',
+      couponConf:'限时券（22:00-02:00），制造紧迫感：\n"深夜犒劳券，满18减4元，仅限今晚使用～"',
+      risk:'周末深夜不宜用"加班"话术；需区分工作日/周末/节假日',
+      implNote:'纯时间判断，实现成本最低；在isTargetUser中新增时间条件分支即可'
+    }
+  },
+  {
+    id:'mood', icon:'💆', name:'情绪关怀',
+    stateShort:'对话语气低落，负面情绪信号',
+    userState:'用户对话语气低落（"随便吧""算了"），疑似情绪不佳',
+    query:'随便吃点什么吧',
+    altQ:['随便吃点什么吧','算了不知道吃啥','无所谓 随便'],
+    botNormal:'那我帮你挑几家不用纠结的~',
+    normalPois:[
+      {rank:1,name:'真功夫',stars:'4.4',meta:'月售5500+ · 18min',price:'¥18起'},
+      {rank:2,name:'吉野家',stars:'4.3',meta:'月售4200+ · 20min',price:'¥22起'},
+      {rank:3,name:'沙县小吃',stars:'4.2',meta:'月售7000+ · 15min',price:'¥10起'}
+    ],
+    botCare:'感觉你今天可能有点累，那就不纠结啦！附近有一家<strong>一口暖心粥铺</strong>，他家的皮蛋瘦肉粥和桂花糯米藕特别治愈，热乎乎的喝完心情都会好一点~',
+    extraPoi:{
+      theme:'comfort',emoji:'🍲',name:'一口暖心粥铺',rating:'4.9',
+      badge:'治愈美食',meta:'月售3000+ | 配送20min | 起送¥12',
+      dishes:[{n:'皮蛋瘦肉粥',p:'15'},{n:'桂花糯米藕',p:'18'},{n:'红豆汤圆',p:'12'}]
+    },
+    coupon:{name:'治愈美食红包',amt:3,cond:'满15元可用',store:'一口暖心粥铺',desc:'想吃啥就吃啥，小美请你3块钱，全品类商家通用',scope:'全品类商家可用',exp:'领取后3天内有效'},
+    strategy:{
+      trigger:'对话NLU实时情绪检测：用户输入包含消极词汇/语气词（"随便""算了""无所谓"），或意图置信度低+极短句',
+      data:'对话上下文NLU分析 — 情绪分类模型 / 关键词匹配',
+      searchQ:'extra.search.query = "粥 甜品 暖食"，偏好comfort food品类',
+      template:'需新增模板：\n"感觉你可能有点累，${store_name}的${products}很治愈～"',
+      couponConf:'低门槛券（满15减3），全品类不限：\n"治愈美食券，满15减3元，想吃啥都行～"',
+      risk:'不要直接说"你心情不好"，用"可能有点累"等委婉表达；避免过度共情显得刻意',
+      implNote:'需要NLU情绪检测能力支持，可先用关键词规则兜底，后续接入情绪分类模型'
+    }
+  }
+];
+
+let cur=0, timers=[], abGroup='treat';
+function clr(){timers.forEach(t=>clearTimeout(t));timers=[]}
+function t(fn,ms){const id=setTimeout(fn,ms);timers.push(id);return id}
+
+function setAB(g){
+  abGroup=g;
+  document.querySelectorAll('.ab-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelector('.ab-btn.'+g).classList.add('on');
+  chat(S[cur]);
+  renderR(S[cur]);
+}
+
+function initSB(){
+  document.getElementById('sList').innerHTML=S.map((s,i)=>`
+    <div class="st ${i===0?'on':''}" onclick="sw(${i})">
+      <div class="st-ic">${s.icon}</div>
+      <div class="st-info"><h3>${s.name}</h3><p>${s.stateShort}</p></div>
+    </div>`).join('');
+}
+
+function sw(i){
+  if(i===cur)return; cur=i;
+  document.querySelectorAll('.st').forEach((e,j)=>e.classList.toggle('on',j===i));
+  render(S[i]);
+  renderR(S[i]);
+}
+
+function render(s){
+  document.getElementById('sTxt').textContent=s.userState;
+  const qb=document.getElementById('qBar');
+  qb.innerHTML=s.altQ.map((q,i)=>`<div class="qc ${i===0?'on':''}" onclick="selQ(this,'${q.replace(/'/g,"\\'")}')">${q}</div>`).join('');
+  chat(s);
+}
+
+function selQ(el,q){
+  document.querySelectorAll('.qc').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  chat(S[cur],q);
+}
+
+function chat(s,cq){
+  clr();
+  const c=document.getElementById('chat');
+  c.innerHTML='';
+  const isTreat = abGroup==='treat';
+  addB(c,'你好呀！想吃什么，我帮你找~');
+  t(()=>{
+    addU(c,cq||s.query);
+    t(()=>{
+      addTyp(c);
+      t(()=>{
+        rmTyp(c);
+        addB(c,s.botNormal);
+        t(()=>{
+          addNormalPois(c,s.normalPois);
+          if(isTreat){
+            t(()=>{
+              addDiv(c,'─── 关怀后挂（仅实验组可见）───');
+              t(()=>{
+                addB(c,s.botCare);
+                t(()=>{
+                  addExtraPoi(c,s.extraPoi,s.coupon);
+                  t(()=>{
+                    addCpn(c,s.coupon);
+                    t(()=>c.scrollTo({top:c.scrollHeight,behavior:'smooth'}),200);
+                  },300);
+                },300);
+              },200);
+            },300);
+          } else {
+            t(()=>{
+              addB(c,'想吃哪个我帮你看看详情？');
+              t(()=>c.scrollTo({top:c.scrollHeight,behavior:'smooth'}),200);
+            },300);
+          }
+        },400);
+      },900);
+    },350);
+  },350);
+}
+
+function addU(c,txt){const d=document.createElement('div');d.className='msg u';d.innerHTML=`<div class="bbl">${txt}</div>`;c.appendChild(d);c.scrollTo({top:c.scrollHeight,behavior:'smooth'})}
+function addB(c,h){const d=document.createElement('div');d.className='msg b';d.innerHTML=`<div class="b-av">美</div><div class="bbl">${h}</div>`;c.appendChild(d);c.scrollTo({top:c.scrollHeight,behavior:'smooth'})}
+function addTyp(c){const d=document.createElement('div');d.className='typ';d.id='tp';d.innerHTML='<span></span><span></span><span></span>';c.appendChild(d);c.scrollTo({top:c.scrollHeight,behavior:'smooth'})}
+function rmTyp(c){const e=document.getElementById('tp');if(e)e.remove()}
+
+function addDiv(c,txt){const d=document.createElement('div');d.className='div-label';d.textContent=txt;c.appendChild(d);c.scrollTo({top:c.scrollHeight,behavior:'smooth'})}
+
+function addNormalPois(c,pois){
+  const w=document.createElement('div');w.className='poi-row';
+  w.innerHTML=pois.map(p=>`
+    <div class="poi-mini">
+      <div class="pm-rank ${p.rank===1?'r1':''}">${p.rank}</div>
+      <div class="pm-body">
+        <div class="pm-name">${p.name} <span class="star">★ ${p.stars}</span></div>
+        <div class="pm-meta">${p.meta}</div>
+      </div>
+      <div class="pm-price">${p.price}</div>
+    </div>`).join('');
+  c.appendChild(w);
+  c.scrollTo({top:c.scrollHeight,behavior:'smooth'});
+}
+
+function addExtraPoi(c,p,cpn){
+  const d=document.createElement('div');d.className='poi-extra-row';
+  d.innerHTML=`<div class="poi-extra-card" data-t="${p.theme}">
+    <div class="pe-main">
+      <div class="pe-emo">${p.emoji}</div>
+      <div class="pe-body">
+        <div class="pe-nm">${p.name} <span class="star">★ ${p.rating}</span></div>
+        <div class="pe-meta">${p.meta}</div>
+        <div class="pe-badges">
+          <span class="pe-badge green">✦ ${p.badge}</span>
+          <span class="pe-badge red">🧧 红包¥${cpn.amt}</span>
+        </div>
+      </div>
+    </div>
+    <div class="pe-dishes">
+      ${p.dishes.map(x=>`<div class="pe-di"><span class="pe-di-name">${x.n}</span><span class="pe-di-price">¥${x.p}</span></div>`).join('')}
+    </div>
+  </div>`;
+  c.appendChild(d);
+  c.scrollTo({top:c.scrollHeight,behavior:'smooth'});
+}
+
+function addCpn(c,cp){
+  const d=document.createElement('div');d.className='cpn-wrap';
+  d.innerHTML=`<div class="cpn">
+    <div class="cpn-top">
+      <div class="cpn-label">🧧 小美外卖红包</div>
+      <div class="cpn-price">
+        <span class="sym">¥</span><span class="val">${cp.amt}</span>
+        <span class="unit">${cp.cond}</span>
+      </div>
+      <div class="cpn-desc">${cp.desc}</div>
+      <div class="cpn-store">推荐门店：${cp.store}</div>
+    </div>
+    <div class="cpn-cut"><div class="cpn-cut-line"></div></div>
+    <div class="cpn-bot">
+      <div class="cpn-rules">
+        <div class="cpn-r">${cp.scope}</div>
+        <div class="cpn-r">${cp.exp}</div>
+      </div>
+      <button class="cpn-btn" onclick="this.textContent='✓ 已领取';this.classList.add('ok')">立即领取</button>
+    </div>
+  </div>`;
+  c.appendChild(d);
+  c.scrollTo({top:c.scrollHeight,behavior:'smooth'});
+}
+
+function renderR(s){
+  const b=document.getElementById('rBd');
+  const st=s.strategy;
+  b.innerHTML=`
+    <div class="sc-title">
+      <div class="ic">${s.icon}</div>
+      <div class="tx"><h3>${s.name}</h3><p>${s.userState}</p></div>
+    </div>
+
+    <div class="ss"><h4><span class="si">📋</span>触发条件</h4>
+      <div class="sc"><span class="lb">条件</span>${st.trigger}</div>
+      <div class="sc"><span class="lb lb-b">数据源</span>${st.data}</div>
+    </div>
+
+    <div class="ss"><h4><span class="si">🔍</span>并行搜索（searchHealthPoi）</h4>
+      <div class="code-box"><span class="cm">// Lion配置</span>\n<span class="ck">extra.search.query</span> = <span class="cv">${st.searchQ.replace(/extra\.search\.query\s*=\s*/,'')}</span></div>
+    </div>
+
+    <div class="ss"><h4><span class="si">💬</span>Prompt注入模板</h4>
+      <div class="code-box"><span class="cm">// health_context 模板 → PoiSummary.buildHealthContext()</span>\n${st.template.replace(/需新增模板：\n/,'').replace(/health\.care\.chat\.context\.template:\n/,'')}</div>
+    </div>
+
+    <div class="ss"><h4><span class="si">🎫</span>券Mock文案</h4>
+      <div class="code-box"><span class="cm">// health.care.coupon.mock.text</span>\n${st.couponConf.replace(/券文案动态化：\n/,'').replace(/低门槛券.*：\n/,'').replace(/限时券.*：\n/,'')}</div>
+    </div>
+
+    <div class="ss"><h4><span class="si">⚠️</span>风险 & 注意事项</h4>
+      <div class="sc"><span class="lb lb-w">风险</span>${st.risk}</div>
+      <div class="sc"><span class="lb lb-y">实现</span>${st.implNote}</div>
+    </div>
+
+    <div class="ss"><h4><span class="si">🧪</span>A/B 实验设计</h4>
+      <div class="sc">
+        <span class="lb lb-b">分桶</span>userId.hashCode() % 100 稳定分桶<br>
+        <span style="margin-left:52px;display:inline-block;margin-top:4px">bucket 0-49 → <strong style="color:#999">对照组 G1</strong></span><br>
+        <span style="margin-left:52px;display:inline-block">bucket 50-99 → <strong style="color:var(--primary)">实验组 G3</strong></span>
+      </div>
+      <div class="sc">
+        <span class="lb">对照组</span>正常推3家店 → 结束。不触发 searchHealthPoi，不注入 health_context，不出券
+      </div>
+      <div class="sc">
+        <span class="lb" style="background:rgba(6,193,96,.2)">实验组</span>正常推3家店 → 并行搜关怀店 → 注入 health_context → LLM 追加关怀段 + 挂店 + 红包
+      </div>
+      <div class="sc">
+        <span class="lb lb-y">建议</span>4个场景共用同一个分桶，不按场景各自AB — 样本量不够拆。先验证「关怀+挂店+券」整体模式的增量效果
+      </div>
+    </div>
+
+    <div class="dn">
+      <h4>核心观测指标</h4>
+      <p>
+        <strong>转化率：</strong>关怀店点击率、关怀店下单率、红包领取率<br>
+        <strong>客单价：</strong>实验组 vs 对照组的平均客单价变化<br>
+        <strong>留存：</strong>次日/7日回访率差异<br>
+        <strong>体验：</strong>对话满意度评分、负反馈率（"不需要推荐"等）
+      </p>
+    </div>
+
+    <div class="dn">
+      <h4>Central Agent 对齐要点</h4>
+      <p>
+        <strong>主搜3店：</strong>callTuanSearchApi → PoiReasoning → totalScore降序取前3<br>
+        <strong>并行健康搜：</strong>searchHealthPoi → 固定query搜团搜 → 取第1家+前3菜品<br>
+        <strong>注入位置：</strong>PoiSummary.generateChatOnlyPrompt 中 \${health_context} 占位符<br>
+        <strong>超时降级：</strong>3秒超时，失败则不出关怀段（降级为对照组体验）<br>
+        <strong>发券：</strong>Phase 1为mock文案，Phase 2走callRedEnvelopSender对接营销activityId
+      </p>
+    </div>`;
+}
+
+initSB();
+render(S[0]);
+renderR(S[0]);
+</script>
+</body>
+</html>

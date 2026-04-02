@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小美人性化营销 · 健康关怀 4 场景开发配置表</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",sans-serif;background:#f5f6fa;color:#1a1a2e;line-height:1.7;padding:32px}
+
+.page{max-width:1400px;margin:0 auto}
+
+/* Header */
+.hd{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-radius:16px;padding:36px 40px;margin-bottom:28px;color:#fff;position:relative;overflow:hidden}
+.hd::after{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(6,193,96,.12)}
+.hd h1{font-size:24px;font-weight:800;margin-bottom:6px}
+.hd p{font-size:13px;opacity:.7;line-height:1.8}
+.hd .tag{display:inline-block;background:rgba(6,193,96,.2);color:#06C160;padding:3px 12px;border-radius:6px;font-size:11px;font-weight:600;margin-top:10px}
+
+/* Section */
+.sec{background:#fff;border-radius:14px;padding:28px 32px;margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid #f0f2f5}
+.sec-hd .ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sec-hd .ic.green{background:rgba(6,193,96,.1)}
+.sec-hd .ic.blue{background:rgba(64,150,255,.1)}
+.sec-hd .ic.orange{background:rgba(255,152,0,.1)}
+.sec-hd .ic.red{background:rgba(255,87,34,.1)}
+.sec-hd h2{font-size:17px;font-weight:700}
+.sec-hd .sub{font-size:12px;color:#999;margin-left:auto}
+
+/* Flow chart */
+.flow-wrap{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;padding:20px 0}
+.flow-node{display:flex;flex-direction:column;align-items:center;gap:4px}
+.flow-box{padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;text-align:center;min-width:110px;line-height:1.5}
+.flow-box.start{background:#e3f2fd;color:#1565c0;border:1.5px solid #90caf9}
+.flow-box.process{background:#fff;color:#333;border:1.5px solid #e0e0e0}
+.flow-box.decision{background:#fff3e0;color:#e65100;border:1.5px solid #ffcc80;transform:rotate(0deg);clip-path:none;border-radius:10px}
+.flow-box.action{background:#e8f5e9;color:#2e7d32;border:1.5px solid #a5d6a7}
+.flow-box.end{background:#fce4ec;color:#c62828;border:1.5px solid #ef9a9a}
+.flow-label{font-size:10px;color:#999;margin-top:2px}
+.flow-arrow{font-size:18px;color:#ccc;margin:0 6px;flex-shrink:0}
+.flow-branch{display:flex;flex-direction:column;align-items:center;gap:6px}
+.flow-branch-label{font-size:10px;color:#06C160;font-weight:600;background:rgba(6,193,96,.08);padding:1px 8px;border-radius:4px}
+.flow-branch-label.gray{color:#999;background:#f5f5f5}
+
+/* Main Table */
+.tbl-wrap{overflow-x:auto;margin:0 -8px;padding:0 8px}
+table.main{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px}
+table.main thead th{background:#1a1a2e;color:#fff;padding:12px 14px;font-weight:600;text-align:left;position:sticky;top:0;z-index:2;white-space:nowrap}
+table.main thead th:first-child{border-radius:10px 0 0 0}
+table.main thead th:last-child{border-radius:0 10px 0 0}
+table.main tbody td{padding:12px 14px;border-bottom:1px solid #f0f2f5;vertical-align:top}
+table.main tbody tr:hover td{background:#fafbfe}
+table.main tbody tr:last-child td:first-child{border-radius:0 0 0 10px}
+table.main tbody tr:last-child td:last-child{border-radius:0 0 10px 0}
+table.main .scene-ic{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13px}
+table.main .scene-ic .em{font-size:18px}
+table.main code{background:#f0f2f5;padding:2px 6px;border-radius:4px;font-size:11px;font-family:"SF Mono","Fira Code",monospace;color:#e65100;white-space:nowrap}
+table.main .tag-s{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;margin:1px 2px}
+table.main .tag-s.green{background:rgba(6,193,96,.1);color:#06C160}
+table.main .tag-s.blue{background:rgba(64,150,255,.1);color:#4096ff}
+table.main .tag-s.orange{background:rgba(255,152,0,.1);color:#ff9800}
+table.main .tag-s.red{background:rgba(255,87,34,.1);color:#ff5722}
+table.main .tag-s.gray{background:#f0f2f5;color:#666}
+table.main .tag-s.purple{background:rgba(156,39,176,.08);color:#9c27b0}
+table.main ul{margin:0;padding-left:16px}
+table.main li{margin-bottom:3px}
+
+/* Lion Config Table */
+table.lion{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+table.lion thead th{background:#16213e;color:#fff;padding:10px 12px;font-weight:600;text-align:left;white-space:nowrap}
+table.lion thead th:first-child{border-radius:8px 0 0 0}
+table.lion thead th:last-child{border-radius:0 8px 0 0}
+table.lion tbody td{padding:10px 12px;border-bottom:1px solid #f0f2f5;vertical-align:top}
+table.lion tbody tr:hover td{background:#fafbfe}
+table.lion code{background:#f0f2f5;padding:2px 6px;border-radius:4px;font-size:11px;font-family:"SF Mono","Fira Code",monospace;color:#1565c0}
+table.lion .st{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
+table.lion .st.exist{background:rgba(6,193,96,.1);color:#06C160}
+table.lion .st.new{background:rgba(255,152,0,.1);color:#ff9800}
+table.lion .st.modify{background:rgba(64,150,255,.1);color:#4096ff}
+
+/* Code Block */
+.code-blk{background:#0d1117;border-radius:8px;padding:14px 16px;font-family:"SF Mono","Fira Code",monospace;font-size:11.5px;color:#c9d1d9;line-height:1.7;overflow-x:auto;margin:8px 0;white-space:pre-wrap}
+.code-blk .kw{color:#ff7b72}
+.code-blk .str{color:#a5d6ff}
+.code-blk .cm{color:#8b949e}
+.code-blk .fn{color:#d2a8ff}
+.code-blk .var{color:#ffa657}
+
+/* Notes */
+.note{padding:14px 18px;border-radius:10px;margin:10px 0;font-size:12px;line-height:1.7}
+.note.warn{background:#fff8e1;border:1px solid #ffe082;color:#795548}
+.note.info{background:#e3f2fd;border:1px solid #90caf9;color:#1565c0}
+.note.tip{background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32}
+.note strong{font-weight:700}
+
+/* Deps */
+.dep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.dep-card{border:1px solid #e8e8e8;border-radius:10px;padding:16px;background:#fafbfc}
+.dep-card h4{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.dep-card p{font-size:11.5px;color:#666;line-height:1.6}
+.dep-card .priority{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.dep-card .priority.p0{background:#ffebee;color:#c62828}
+.dep-card .priority.p1{background:#fff3e0;color:#e65100}
+.dep-card .priority.p2{background:#e8f5e9;color:#2e7d32}
+
+/* Coupon detail */
+.cpn-detail{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12px}
+.cpn-detail dt{font-weight:600;color:#666;white-space:nowrap}
+.cpn-detail dd{color:#333}
+
+/* Responsive */
+@media(max-width:900px){
+  body{padding:16px}
+  .sec{padding:18px}
+  table.main{font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ===== Header ===== -->
+<div class="hd">
+  <h1>小美人性化营销 · 健康关怀 4 场景开发配置表</h1>
+  <p>对齐 Central Agent 架构 · 研发交接文档 · 涵盖触发规则 / 挂店 Query / 券配置 / 话术模板</p>
+  <div class="tag">feature/health-care-experiment · Phase 1</div>
+</div>
+
+<!-- ===== 1. 执行流程图 ===== -->
+<div class="sec">
+  <div class="sec-hd">
+    <div class="ic green">📋</div>
+    <h2>执行流程（对齐 Central Agent 链路）</h2>
+    <span class="sub">CentralAgentRunner → HttpToolkit → IntegratedSearchService → PoiSummary</span>
+  </div>
+
+  <div class="flow-wrap">
+    <div class="flow-node">
+      <div class="flow-box start">用户 Query<br><span style="font-size:10px;opacity:.7">"帮我点个午餐"</span></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box process">CentralAgentRunner<br><span style="font-size:10px;opacity:.7">think → act</span></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box decision">isTargetUser?<br><span style="font-size:10px">场景触发判断</span></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-branch">
+      <div class="flow-branch-label">命中</div>
+      <div class="flow-box process">assignGroup()<br><span style="font-size:10px;opacity:.7">hashCode%100 分桶</span></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box action" style="min-width:170px">
+        <strong>并行执行</strong><br>
+        <span style="font-size:10px">① callTuanSearchApi → 主搜3店<br>② searchHealthPoi → 关怀店(3s超时)</span>
+      </div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box action">PoiSummary<br><span style="font-size:10px">${health_context}<br>注入 prompt</span></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box end">LLM 生成回复<br><span style="font-size:10px">正常推荐 + 关怀段<br>+ 挂店 + 红包</span></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:20px;margin-top:12px;justify-content:center;flex-wrap:wrap">
+    <div class="note info" style="flex:1;min-width:260px;max-width:400px">
+      <strong>对照组 G1（bucket 0-49）</strong><br>
+      正常推3家店 → 结束。不触发 searchHealthPoi，不注入 health_context，不出券。
+    </div>
+    <div class="note tip" style="flex:1;min-width:260px;max-width:400px">
+      <strong>实验组 G3（bucket 50-99）</strong><br>
+      正常推3家店 → 并行搜关怀店 → 注入 health_context → LLM 追加关怀段 + 挂店 + 红包。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2. 核心配置总表 ===== -->
+<div class="sec">
+  <div class="sec-hd">
+    <div class="ic blue">📊</div>
+    <h2>4 场景核心配置总表</h2>
+    <span class="sub">每个场景的触发规则 / 挂店 Query / 推荐逻辑 / 券 / 话术</span>
+  </div>
+
+  <div class="tbl-wrap">
+  <table class="main">
+    <thead>
+      <tr>
+        <th style="width:100px">场景</th>
+        <th style="width:180px">触发规则</th>
+        <th style="width:110px">挂店搜索 Query</th>
+        <th style="width:170px">店铺推荐逻辑</th>
+        <th style="width:230px">Prompt 话术模板<br><span style="font-weight:400;opacity:.7">health_context 注入内容</span></th>
+        <th style="width:200px">券配置</th>
+        <th style="width:140px">风险 &amp; 注意</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 场景 1：不健康饮食 -->
+      <tr>
+        <td>
+          <div class="scene-ic"><span class="em">🍔</span>不健康<br>饮食提醒</div>
+          <div style="margin-top:6px"><span class="tag-s green">已有基础</span></div>
+        </td>
+        <td>
+          <strong>Horus persona 标签匹配</strong>
+          <ul>
+            <li>personaKey 包含 <code>unhealthy_dining</code> 或 <code>health_risk</code></li>
+            <li>personaValue 包含 "不健康饮食" 或 "高频不健康外卖"</li>
+          </ul>
+          <div style="margin-top:6px">
+            <span class="tag-s gray">数据源</span> Horus longPersonaDetailList<br>
+            <span class="tag-s green">复用</span> 现有 isTargetUser() 逻辑
+          </div>
+        </td>
+        <td>
+          <code>粥 轻食 沙拉</code>
+          <div style="margin-top:4px;font-size:11px;color:#999">Lion key:<br><code>health.care.extra.search.query</code></div>
+          <div style="margin-top:4px"><span class="tag-s green">现有默认值</span></div>
+        </td>
+        <td>
+          <ul>
+            <li>调 <code>searchHealthPoi()</code>，query 固定用 Lion 配置值</li>
+            <li>调团搜外卖 scene，取返回<strong>第 1 家店</strong></li>
+            <li>取该店<strong>前 3 个菜品</strong>名称+价格</li>
+            <li>写入 RunnerContext：<code>healthExtraStoreName</code>、<code>healthExtraStoreProducts</code></li>
+          </ul>
+          <div style="margin-top:4px"><span class="tag-s blue">3s 超时</span> 失败降级为对照组</div>
+        </td>
+        <td>
+          <div class="code-blk"><span class="cm">// health.care.chat.context.template</span>
+另外附近还有一家<span class="var">${store_name}</span>，
+<span class="var">${products}</span>，
+最近吃得有点重口，
+想来点清淡的可以试试～</div>
+          <div style="font-size:11px;color:#666;margin-top:6px">
+            <strong>示例输出：</strong><br>
+            "对了，看你最近几天吃了不少重口味的，今天换个清淡的试试？附近有一家<strong>绿野轻食</strong>，他家的鸡胸肉沙拉和藜麦便当都很受欢迎～"
+          </div>
+        </td>
+        <td>
+          <dl class="cpn-detail">
+            <dt>券名称</dt><dd>健康美食专属红包</dd>
+            <dt>面额</dt><dd>满 20 减 <strong style="color:#ff5722">5</strong> 元</dd>
+            <dt>适用范围</dt><dd>轻食 / 沙拉 / 粥品类商家</dd>
+            <dt>有效期</dt><dd>领取后 3 天</dd>
+            <dt>卡片文案</dt><dd style="font-size:11px">"点这家店小美送你5块钱红包，轻食沙拉粥品类商家通用"</dd>
+            <dt style="color:#1565c0">mock.text</dt><dd style="font-size:11px;color:#1565c0">"给你准备了一张健康美食专属券，满20减5元，轻食沙拉粥品类可用，3天有效～"</dd>
+          </dl>
+        </td>
+        <td>
+          <ul>
+            <li>避免让用户感觉"被监控"饮食</li>
+            <li>话术需自然柔和，不做医学判断</li>
+            <li>不说"你吃了 X 次炸鸡"等具体数据</li>
+          </ul>
+        </td>
+      </tr>
+
+      <!-- 场景 2：天气变化 -->
+      <tr>
+        <td>
+          <div class="scene-ic"><span class="em">🌧️</span>天气变化<br>关怀</div>
+          <div style="margin-top:6px"><span class="tag-s orange">需新增</span></div>
+        </td>
+        <td>
+          <strong>天气 API 实时信号</strong>
+          <ul>
+            <li>当日降温 ≥ 8°C</li>
+            <li>或 降雨/降雪/大风等恶劣天气</li>
+          </ul>
+          <div style="margin-top:6px">
+            <span class="tag-s gray">数据源</span> 实时天气接口 + 用户城市定位<br>
+            <span class="tag-s orange">新增</span> isTargetUser 天气分支
+          </div>
+        </td>
+        <td>
+          <code>砂锅 热汤 粥</code>
+          <div style="margin-top:4px;font-size:11px;color:#999">按天气类型动态切换：<br>
+            降温 → 热汤/砂锅<br>
+            降雨 → 粥/面/热饮
+          </div>
+          <div style="margin-top:4px"><span class="tag-s orange">新增 Lion key</span></div>
+        </td>
+        <td>
+          <ul>
+            <li>搜索逻辑同上，复用 <code>searchHealthPoi()</code></li>
+            <li>需根据天气类型动态切换 query</li>
+            <li>优先推荐暖胃/热食品类店铺</li>
+            <li>同样取第 1 家 + 前 3 菜品</li>
+          </ul>
+          <div style="margin-top:4px"><span class="tag-s blue">3s 超时</span> 失败降级</div>
+        </td>
+        <td>
+          <div class="code-blk"><span class="cm">// 新增 weather context template</span>
+今天降温不少，
+<span class="var">${store_name}</span>的<span class="var">${products}</span>
+很适合暖暖身子～</div>
+          <div style="font-size:11px;color:#666;margin-top:6px">
+            <strong>示例输出：</strong><br>
+            "今天降温了不少，出门记得加衣服！附近有一家<strong>老张砂锅粥</strong>，招牌砂锅粥和菌菇鸡汤都很暖胃，下雨天窝着喝一碗超幸福～"
+          </div>
+        </td>
+        <td>
+          <dl class="cpn-detail">
+            <dt>券名称</dt><dd>暖冬暖胃红包</dd>
+            <dt>面额</dt><dd>满 25 减 <strong style="color:#ff5722">5</strong> 元</dd>
+            <dt>适用范围</dt><dd>粥 / 汤 / 火锅品类商家</dd>
+            <dt>有效期</dt><dd>领取后 3 天</dd>
+            <dt>卡片文案</dt><dd style="font-size:11px">"天冷了来碗热的，小美请你5块钱，粥汤火锅类商家通用"</dd>
+            <dt style="color:#1565c0">mock.text</dt><dd style="font-size:11px;color:#1565c0">"暖冬专属券，满25减5元，粥/汤/火锅品类可用，3天有效～"</dd>
+          </dl>
+        </td>
+        <td>
+          <ul>
+            <li>天气信息需实时准确</li>
+            <li>不同区域差异大</li>
+            <li>避免阳光明媚时说"下雨"</li>
+            <li>需接入可靠天气数据源</li>
+          </ul>
+        </td>
+      </tr>
+
+      <!-- 场景 3：深夜加班 -->
+      <tr>
+        <td>
+          <div class="scene-ic"><span class="em">🌙</span>深夜加班<br>关怀</div>
+          <div style="margin-top:6px"><span class="tag-s green">成本最低</span></div>
+        </td>
+        <td>
+          <strong>时间条件判断</strong>
+          <ul>
+            <li>工作日（周一至周五）</li>
+            <li>22:00 ~ 次日 02:00 时段点餐</li>
+          </ul>
+          <div style="margin-top:6px">
+            <span class="tag-s gray">数据源</span> 系统时间 + 日历 API<br>
+            <span class="tag-s green">简单</span> 纯时间判断，成本最低
+          </div>
+        </td>
+        <td>
+          <code>粥 面 蒸饺 宵夜</code>
+          <div style="margin-top:4px;font-size:11px;color:#999">额外过滤：<br>
+            <code>当前营业中</code><br>
+            深夜需确保店铺在营
+          </div>
+          <div style="margin-top:4px"><span class="tag-s orange">新增 Lion key</span></div>
+        </td>
+        <td>
+          <ul>
+            <li>搜索逻辑同上，复用 <code>searchHealthPoi()</code></li>
+            <li>query 侧重宵夜品类</li>
+            <li>需过滤"当前营业中"店铺（团搜侧支持）</li>
+            <li>优先推荐清淡宵夜而非重口烧烤</li>
+          </ul>
+          <div style="margin-top:4px"><span class="tag-s blue">3s 超时</span> 失败降级</div>
+        </td>
+        <td>
+          <div class="code-blk"><span class="cm">// 新增 latenight context template</span>
+深夜来碗<span class="var">${store_name}</span>的
+<span class="var">${products}</span>，
+暖胃又不会太负担～</div>
+          <div style="font-size:11px;color:#666;margin-top:6px">
+            <strong>示例输出：</strong><br>
+            "深夜吃太油腻容易胃不舒服，给你找了一家<strong>粥小仙</strong>的红枣小米粥和蒸饺组合超适合当宵夜，暖胃又管饱～"
+          </div>
+        </td>
+        <td>
+          <dl class="cpn-detail">
+            <dt>券名称</dt><dd>深夜犒劳红包</dd>
+            <dt>面额</dt><dd>满 18 减 <strong style="color:#ff5722">4</strong> 元</dd>
+            <dt>适用范围</dt><dd>全品类 · <span class="tag-s red">仅限 22:00-02:00</span></dd>
+            <dt>有效期</dt><dd>仅限当日</dd>
+            <dt>卡片文案</dt><dd style="font-size:11px">"加班辛苦了，小美请你4块钱宵夜，全品类商家可用"</dd>
+            <dt style="color:#1565c0">mock.text</dt><dd style="font-size:11px;color:#1565c0">"深夜犒劳券，满18减4元，仅限今晚使用～"</dd>
+          </dl>
+        </td>
+        <td>
+          <ul>
+            <li><strong>周末深夜</strong>不宜用"加班"话术</li>
+            <li>需区分工作日/周末/节假日</li>
+            <li>话术改为"夜宵时间到"更通用</li>
+          </ul>
+        </td>
+      </tr>
+
+      <!-- 场景 4：情绪关怀 -->
+      <tr>
+        <td>
+          <div class="scene-ic"><span class="em">💆</span>情绪<br>关怀</div>
+          <div style="margin-top:6px"><span class="tag-s purple">NLU 依赖</span></div>
+        </td>
+        <td>
+          <strong>对话 NLU 情绪检测</strong>
+          <ul>
+            <li>用户输入含消极词："随便""算了""无所谓"</li>
+            <li>或意图置信度低 + 极短句</li>
+          </ul>
+          <div style="margin-top:6px">
+            <span class="tag-s gray">数据源</span> 对话上下文 NLU<br>
+            <span class="tag-s purple">先</span> 关键词规则兜底<br>
+            <span class="tag-s purple">后</span> 接入情绪分类模型
+          </div>
+        </td>
+        <td>
+          <code>粥 甜品 暖食</code>
+          <div style="margin-top:4px;font-size:11px;color:#999">偏好 comfort food 品类：<br>
+            粥 / 甜品 / 暖食
+          </div>
+          <div style="margin-top:4px"><span class="tag-s orange">新增 Lion key</span></div>
+        </td>
+        <td>
+          <ul>
+            <li>搜索逻辑同上，复用 <code>searchHealthPoi()</code></li>
+            <li>query 侧重治愈系/comfort food</li>
+            <li>同样取第 1 家 + 前 3 菜品</li>
+            <li>店铺选择偏向评分高、温馨类</li>
+          </ul>
+          <div style="margin-top:4px"><span class="tag-s blue">3s 超时</span> 失败降级</div>
+        </td>
+        <td>
+          <div class="code-blk"><span class="cm">// 新增 mood context template</span>
+感觉你可能有点累，
+<span class="var">${store_name}</span>的<span class="var">${products}</span>
+很治愈～</div>
+          <div style="font-size:11px;color:#666;margin-top:6px">
+            <strong>示例输出：</strong><br>
+            "感觉你今天可能有点累，那就不纠结啦！附近有一家<strong>一口暖心粥铺</strong>，皮蛋瘦肉粥和桂花糯米藕特别治愈～"
+          </div>
+        </td>
+        <td>
+          <dl class="cpn-detail">
+            <dt>券名称</dt><dd>治愈美食红包</dd>
+            <dt>面额</dt><dd>满 15 减 <strong style="color:#ff5722">3</strong> 元</dd>
+            <dt>适用范围</dt><dd>全品类商家 · <span class="tag-s green">低门槛</span></dd>
+            <dt>有效期</dt><dd>领取后 3 天</dd>
+            <dt>卡片文案</dt><dd style="font-size:11px">"想吃啥就吃啥，小美请你3块钱，全品类商家通用"</dd>
+            <dt style="color:#1565c0">mock.text</dt><dd style="font-size:11px;color:#1565c0">"治愈美食券，满15减3元，想吃啥都行～"</dd>
+          </dl>
+        </td>
+        <td>
+          <ul>
+            <li><strong>不要直接说</strong>"你心情不好"</li>
+            <li>用"可能有点累"等委婉表达</li>
+            <li>避免过度共情显得刻意</li>
+            <li>NLU 误判时需有兜底</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ===== 3. 触发规则详细对比 ===== -->
+<div class="sec">
+  <div class="sec-hd">
+    <div class="ic orange">⚙️</div>
+    <h2>触发规则实现细节</h2>
+    <span class="sub">isTargetUser() 扩展方案</span>
+  </div>
+
+  <div class="note info" style="margin-bottom:16px">
+    <strong>当前实现：</strong><code>HealthRecommendService.isTargetUser()</code> 仅支持 Horus persona 标签匹配（场景1）。需扩展为<strong>多条件分支</strong>，支持 4 种触发源。建议新增 <code>sceneType</code> 字段标识命中的场景，用于动态切换 query / template。
+  </div>
+
+  <div class="tbl-wrap">
+  <table class="main">
+    <thead>
+      <tr>
+        <th>场景</th>
+        <th>触发条件</th>
+        <th>数据源</th>
+        <th>实现位置</th>
+        <th>实现成本</th>
+        <th>建议优先级</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="scene-ic"><span class="em">🍔</span> 不健康饮食</span></td>
+        <td>personaKey ⊃ <code>unhealthy_dining</code> / <code>health_risk</code><br>personaValue ⊃ "不健康饮食" / "高频不健康外卖"</td>
+        <td>Horus longPersonaDetailList</td>
+        <td>isTargetUser() 现有逻辑<br><span class="tag-s green">无需改动</span></td>
+        <td><span class="tag-s green">零成本</span></td>
+        <td><span class="tag-s green">P0 首批</span></td>
+      </tr>
+      <tr>
+        <td><span class="scene-ic"><span class="em">🌙</span> 深夜加班</span></td>
+        <td>工作日 22:00-02:00<br><code>dayOfWeek in [MON..FRI] && (hour>=22 || hour<=2)</code></td>
+        <td>System.currentTimeMillis()<br>+ 节假日 API（可选）</td>
+        <td>isTargetUser() 新增时间分支</td>
+        <td><span class="tag-s green">低</span></td>
+        <td><span class="tag-s green">P0 首批</span></td>
+      </tr>
+      <tr>
+        <td><span class="scene-ic"><span class="em">🌧️</span> 天气变化</span></td>
+        <td>降温 ≥ 8°C，或降雨/降雪/大风</td>
+        <td>天气 API + 用户城市定位</td>
+        <td>isTargetUser() 新增天气分支<br><span class="tag-s orange">需接入天气数据源</span></td>
+        <td><span class="tag-s orange">中</span></td>
+        <td><span class="tag-s orange">P1 二期</span></td>
+      </tr>
+      <tr>
+        <td><span class="scene-ic"><span class="em">💆</span> 情绪关怀</span></td>
+        <td>输入含 "随便""算了""无所谓" 等消极词<br>或意图置信度低 + 极短句</td>
+        <td>对话上下文 NLU / 关键词规则</td>
+        <td>isTargetUser() 新增 NLU 分支<br><span class="tag-s purple">先规则后模型</span></td>
+        <td><span class="tag-s orange">中</span></td>
+        <td><span class="tag-s orange">P1 二期</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="code-blk" style="margin-top:16px"><span class="cm">// HealthRecommendService.isTargetUser() 扩展伪代码</span>
+
+<span class="kw">public</span> HealthCareResult <span class="fn">isTargetUser</span>(CentralAgentTask task) {
+    <span class="cm">// 1. 现有逻辑：persona 标签匹配 → 不健康饮食场景</span>
+    <span class="kw">if</span> (matchPersona(task)) <span class="kw">return</span> <span class="kw">new</span> HealthCareResult(<span class="str">"unhealthy"</span>, <span class="str">"粥 轻食 沙拉"</span>);
+
+    <span class="cm">// 2. 新增：时间条件 → 深夜加班场景</span>
+    <span class="kw">if</span> (isWorkdayLateNight()) <span class="kw">return</span> <span class="kw">new</span> HealthCareResult(<span class="str">"latenight"</span>, <span class="str">"粥 面 蒸饺 宵夜"</span>);
+
+    <span class="cm">// 3. 新增：天气信号 → 天气关怀场景</span>
+    <span class="kw">if</span> (isWeatherCare(task)) <span class="kw">return</span> <span class="kw">new</span> HealthCareResult(<span class="str">"weather"</span>, <span class="str">"砂锅 热汤 粥"</span>);
+
+    <span class="cm">// 4. 新增：NLU 情绪 → 情绪关怀场景</span>
+    <span class="kw">if</span> (isMoodLow(task)) <span class="kw">return</span> <span class="kw">new</span> HealthCareResult(<span class="str">"mood"</span>, <span class="str">"粥 甜品 暖食"</span>);
+
+    <span class="kw">return</span> <span class="kw">null</span>; <span class="cm">// 未命中</span>
+}</div>
+</div>
+
+<!-- ===== 4. Lion 配置汇总表 ===== -->
+<div class="sec">
+  <div class="sec-hd">
+    <div class="ic blue">🦁</div>
+    <h2>Lion 配置汇总</h2>
+    <span class="sub">MdpLionConfig · 所有需要新增或修改的配置项</span>
+  </div>
+
+  <div class="tbl-wrap">
+  <table class="lion">
+    <thead>
+      <tr>
+        <th>Lion Key</th>
+        <th>状态</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>health.care.enable</code></td>
+        <td><span class="st exist">已有</span></td>
+        <td>Boolean</td>
+        <td><code>false</code></td>
+        <td>健康关怀总开关</td>
+      </tr>
+      <tr>
+        <td><code>health.care.test.mode.enable</code></td>
+        <td><span class="st exist">已有</span></td>
+        <td>Boolean</td>
+        <td><code>false</code></td>
+        <td>众测模式开关（全量命中）</td>
+      </tr>
+      <tr>
+        <td><code>health.care.target.user.list</code></td>
+        <td><span class="st exist">已有</span></td>
+        <td>List&lt;String&gt;</td>
+        <td><code>[]</code></td>
+        <td>白名单用户列表</td>
+      </tr>
+      <tr>
+        <td><code>health.care.target.persona.keys</code></td>
+        <td><span class="st exist">已有</span></td>
+        <td>List&lt;String&gt;</td>
+        <td><code>["unhealthy_dining","health_risk"]</code></td>
+        <td>persona key 匹配列表（不健康饮食场景）</td>
+      </tr>
+      <tr>
+        <td><code>health.care.target.persona.values</code></td>
+        <td><span class="st exist">已有</span></td>
+        <td>List&lt;String&gt;</td>
+        <td><code>["不健康饮食","高频不健康外卖"]</code></td>
+        <td>persona value 匹配列表</td>
+      </tr>
+      <tr>
+        <td><code>health.care.extra.search.query</code></td>
+        <td><span class="st modify">需改为 Map</span></td>
+        <td>String → Map</td>
+        <td><code>粥 轻食 沙拉</code></td>
+        <td>挂店搜索 query，需支持按场景配置不同值：<br>
+          unhealthy → "粥 轻食 沙拉"<br>
+          weather → "砂锅 热汤 粥"<br>
+          latenight → "粥 面 蒸饺 宵夜"<br>
+          mood → "粥 甜品 暖食"
+        </td>
+      </tr>
+      <tr>
+        <td><code>health.care.chat.context.template</code></td>
+        <td><span class="st modify">需改为 Map</span></td>
+        <td>String → Map</td>
+        <td>现有单一模板</td>
+        <td>话术模板，需支持按场景配置不同值（见上方表格）</td>
+      </tr>
+      <tr>
+        <td><code>health.care.coupon.mock.enable</code></td>
+        <td><span class="st exist">已有</span></td>
+        <td>Boolean</td>
+        <td><code>false</code></td>
+        <td>券 mock 开关（Phase 1 用）</td>
+      </tr>
+      <tr>
+        <td><code>health.care.coupon.mock.text</code></td>
+        <td><span class="st modify">需改为 Map</span></td>
+        <td>String → Map</td>
+        <td>现有单一文案</td>
+        <td>券文案，需支持按场景配置不同值（见上方表格）</td>
+      </tr>
+      <tr>
+        <td><code>health.care.scene.latenight.enable</code></td>
+        <td><span class="st new">新增</span></td>
+        <td>Boolean</td>
+        <td><code>false</code></td>
+        <td>深夜加班场景独立开关</td>
+      </tr>
+      <tr>
+        <td><code>health.care.scene.latenight.hours</code></td>
+        <td><span class="st new">新增</span></td>
+        <td>String</td>
+        <td><code>22:00-02:00</code></td>
+        <td>深夜场景生效时间段</td>
+      </tr>
+      <tr>
+        <td><code>health.care.scene.weather.enable</code></td>
+        <td><span class="st new">新增</span></td>
+        <td>Boolean</td>
+        <td><code>false</code></td>
+        <td>天气关怀场景独立开关</td>
+      </tr>
+      <tr>
+        <td><code>health.care.scene.weather.temp.drop</code></td>
+        <td><span class="st new">新增</span></td>
+        <td>Integer</td>
+        <td><code>8</code></td>
+        <td>降温触发阈值（°C）</td>
+      </tr>
+      <tr>
+        <td><code>health.care.scene.mood.enable</code></td>
+        <td><span class="st new">新增</span></td>
+        <td>Boolean</td>
+        <td><code>false</code></td>
+        <td>情绪关怀场景独立开关</td>
+      </tr>
+      <tr>
+        <td><code>health.care.scene.mood.keywords</code></td>
+        <td><span class="st new">新增</span></td>
+        <td>List&lt;String&gt;</td>
+        <td><code>["随便","算了","无所谓","都行","不知道"]</code></td>
+        <td>情绪检测关键词列表（规则兜底）</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note warn" style="margin-top:14px">
+    <strong>改造建议：</strong>将 <code>health.care.extra.search.query</code>、<code>health.care.chat.context.template</code>、<code>health.care.coupon.mock.text</code> 从 String 改为 <code>Map&lt;String, String&gt;</code>，key 为场景 ID（unhealthy / weather / latenight / mood），value 为对应配置。这样只需修改 MdpLionConfig 的 3 个字段类型 + searchHealthPoi 和 buildHealthContext 读取时传入 sceneType 即可。
+  </div>
+</div>
+
+<!-- ===== 5. 券配置详细对比 ===== -->
+<div class="sec">
+  <div class="sec-hd">
+    <div class="ic red">🎫</div>
+    <h2>券配置对比</h2>
+    <span class="sub">4 场景的券面额 / 门槛 / 品类 / 有效期 / 文案差异</span>
+  </div>
+
+  <div class="tbl-wrap">
+  <table class="main">
+    <thead>
+      <tr>
+        <th>场景</th>
+        <th>券名称</th>
+        <th>面额</th>
+        <th>门槛</th>
+        <th>适用品类</th>
+        <th>有效期</th>
+        <th>时段</th>
+        <th>红包卡片文案<br><span style="font-weight:400;opacity:.7">coupon.desc — 用户在卡片上看到的</span></th>
+        <th>Lion coupon.mock.text<br><span style="font-weight:400;opacity:.7">注入 prompt 给 LLM 用的</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>🍔 不健康饮食</td>
+        <td>健康美食专属红包</td>
+        <td><strong style="color:#ff5722">¥5</strong></td>
+        <td>满20元</td>
+        <td>轻食/沙拉/粥品类</td>
+        <td>3 天</td>
+        <td>无</td>
+        <td style="font-size:11.5px">"点这家店小美送你5块钱红包，轻食沙拉粥品类商家通用"</td>
+        <td style="font-size:11.5px;color:#1565c0">"给你准备了一张健康美食专属券，满20减5元，轻食沙拉粥品类可用，3天有效～"</td>
+      </tr>
+      <tr>
+        <td>🌧️ 天气变化</td>
+        <td>暖冬暖胃红包</td>
+        <td><strong style="color:#ff5722">¥5</strong></td>
+        <td>满25元</td>
+        <td>粥/汤/火锅品类</td>
+        <td>3 天</td>
+        <td>无</td>
+        <td style="font-size:11.5px">"天冷了来碗热的，小美请你5块钱，粥汤火锅类商家通用"</td>
+        <td style="font-size:11.5px;color:#1565c0">"暖冬专属券，满25减5元，粥/汤/火锅品类可用，3天有效～"</td>
+      </tr>
+      <tr>
+        <td>🌙 深夜加班</td>
+        <td>深夜犒劳红包</td>
+        <td><strong style="color:#ff5722">¥4</strong></td>
+        <td>满18元</td>
+        <td>全品类</td>
+        <td>仅当日</td>
+        <td>22-02时</td>
+        <td style="font-size:11.5px">"加班辛苦了，小美请你4块钱宵夜，全品类商家可用"</td>
+        <td style="font-size:11.5px;color:#1565c0">"深夜犒劳券，满18减4元，仅限今晚使用～"</td>
+      </tr>
+      <tr>
+        <td>💆 情绪关怀</td>
+        <td>治愈美食红包</td>
+        <td><strong style="color:#ff5722">¥3</strong></td>
+        <td>满15元</td>
+        <td>全品类</td>
+        <td>3 天</td>
+        <td>无</td>
+        <td style="font-size:11.5px">"想吃啥就吃啥，小美请你3块钱，全品类商家通用"</td>
+        <td style="font-size:11.5px;color:#1565c0">"治愈美食券，满15减3元，想吃啥都行～"</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note info" style="margin-top:14px">
+    <strong>两层文案的区别：</strong><br>
+    <strong>红包卡片文案</strong>（coupon.desc）：展示在聊天中的红包卡片 UI 上，用户直接看到，语气偏口语化、有场景感。<br>
+    <strong>Lion coupon.mock.text</strong>：注入到 prompt 中给 LLM 参考，LLM 会基于此自然融入对话。格式更结构化，包含面额、门槛、品类、有效期。
+  </div>
+
+  <div class="note tip" style="margin-top:14px">
+    <strong>Phase 1（当前）：</strong>券为 mock 文案，不实际发放。通过 <code>health.care.coupon.mock.text</code> 配置。<br>
+    <strong>Phase 2（后续）：</strong>对接 <code>callRedEnvelopSender</code>，使用真实 <code>activityId</code>（参照"开工红包"子 agent 发券链路）。需区分用户类型（羊毛党 / 风控用户 / 其他），对接 persona 标签。
+  </div>
+</div>
+
+<!-- ===== 6. AB 实验设计 ===== -->
+<div class="sec">
+  <div class="sec-hd">
+    <div class="ic green">🧪</div>
+    <h2>A/B 实验设计</h2>
+    <span class="sub">分桶策略 · 核心指标 · 观测方案</span>
+  </div>
+
+  <div class="tbl-wrap">
+  <table class="main">
+    <thead>
+      <tr>
+        <th style="width:120px">维度</th>
+        <th>说明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>分桶方式</strong></td>
+        <td>
+          <code>(userId.hashCode() & 0x7FFFFFFF) % 100</code><br>
+          bucket 0-49 → <strong>对照组 G1</strong>&nbsp;&nbsp;|&nbsp;&nbsp;bucket 50-99 → <strong style="color:#06C160">实验组 G3</strong><br>
+          <span style="color:#999;font-size:11px">Phase 1 只分 G1/G3，Phase 2 扩展为 G1(对照)/G2(仅发券)/G3(仅挂店)/G4(挂店+发券)</span>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>场景共用分桶</strong></td>
+        <td>4 个场景共用同一个 G1/G3 分桶，<strong>不按场景各自 AB</strong>。<br>原因：单场景样本量不够拆，先验证"关怀+挂店+券"整体模式的增量效果。</td>
+      </tr>
+      <tr>
+        <td><strong>对照组行为</strong></td>
+        <td>正常推 3 家店 → 结束。不触发 searchHealthPoi，不注入 health_context，不出券。</td>
+      </tr>
+      <tr>
+        <td><strong>实验组行为</strong></td>
+        <td>正常推 3 家店 → 并行搜关怀店 → 注入 health_context → LLM 追加关怀段 + 挂店 + 红包。</td>
+      </tr>
+      <tr>
+        <td><strong>超时降级</strong></td>
+        <td>searchHealthPoi 3 秒超时，失败则实验组也降级为对照组体验（不出关怀段）。</td>
+      </tr>
+      <tr>
+        <td><strong>核心指标</strong></td>
+        <td>
+          <ul>
+            <li><strong>转化率：</strong>关怀店点击率、关怀店下单率、红包领取率</li>
+            <li><strong>客单价：</strong>实验组 vs 对照组平均客单价变化</li>
+            <li><strong>留存：</strong>次日 / 7日回访率差异</li>
+            <li><strong>体验：</strong>对话满意度评分、负反馈率（"不需要推荐"等）</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ===== 7. 需新增能力/数据源 ===== -->
+<div class="sec">
+  <div class="sec-hd">
+    <div class="ic orange">🔌</div>
+    <h2>需新增能力 / 数据源</h2>
+    <span class="sub">4 场景涉及的外部依赖和改造点</span>
+  </div>
+
+  <div class="dep-grid">
+    <div class="dep-card">
+      <h4><span class="priority p2">P0</span> 场景路由 sceneType</h4>
+      <p>在 <code>RunnerContext</code> 新增 <code>healthSceneType</code> 字段（unhealthy / weather / latenight / mood），用于动态选取不同的 query、template、coupon 配置。<code>HealthRecommendService</code> 返回时设置。</p>
+    </div>
+    <div class="dep-card">
+      <h4><span class="priority p2">P0</span> Lion 配置 Map 化</h4>
+      <p>将 <code>extra.search.query</code>、<code>chat.context.template</code>、<code>coupon.mock.text</code> 从 String 改为 <code>Map&lt;String, String&gt;</code>，key=sceneType，value=场景配置。</p>
+    </div>
+    <div class="dep-card">
+      <h4><span class="priority p2">P0</span> 时间条件判断</h4>
+      <p>在 <code>isTargetUser()</code> 中新增时间分支：工作日 22:00-02:00 → 命中深夜场景。仅需 <code>LocalDateTime</code> + <code>DayOfWeek</code>，无外部依赖。节假日 API 可选。</p>
+    </div>
+    <div class="dep-card">
+      <h4><span class="priority p1">P1</span> 天气 API 接入</h4>
+      <p>接入实时天气数据源（推荐：彩云天气 / 和风天气 / 美团内部气象服务）。按用户定位城市获取当日温差、降水概率。需增加缓存避免 API 限频。</p>
+    </div>
+    <div class="dep-card">
+      <h4><span class="priority p1">P1</span> NLU 情绪检测</h4>
+      <p>Phase 1 用关键词规则兜底（"随便""算了""无所谓""都行""不知道"等）。Phase 2 接入情绪分类模型（对话上下文 → 情绪标签）。需与 NLU 团队对接。</p>
+    </div>
+    <div class="dep-card">
+      <h4><span class="priority p1">P1</span> 券真实发放</h4>
+      <p>Phase 2 对接 <code>callRedEnvelopSender</code>，使用真实 activityId（参照"开工红包"子 agent 发券链路）。需配置各场景独立的 activityId 和用户类型风控逻辑。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 8. 关键代码引用 ===== -->
+<div class="sec">
+  <div class="sec-hd">
+    <div class="ic green">💻</div>
+    <h2>关键代码引用</h2>
+    <span class="sub">feature/health-care-experiment 分支</span>
+  </div>
+
+  <div class="tbl-wrap">
+  <table class="lion">
+    <thead>
+      <tr>
+        <th>功能</th>
+        <th>文件</th>
+        <th>方法 / 字段</th>
+        <th>行号</th>
+        <th>说明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>目标用户判断</td>
+        <td><code>HealthRecommendService.java</code></td>
+        <td><code>isTargetUser()</code></td>
+        <td>L30-72</td>
+        <td>Horus persona 匹配（需扩展多条件分支）</td>
+      </tr>
+      <tr>
+        <td>实验分桶</td>
+        <td><code>HealthRecommendService.java</code></td>
+        <td><code>assignGroup()</code></td>
+        <td>L78-89</td>
+        <td>userId hashCode % 100 → G1/G3</td>
+      </tr>
+      <tr>
+        <td>并行搜索关怀店</td>
+        <td><code>IntegratedSearchService.java</code></td>
+        <td><code>searchHealthPoi()</code></td>
+        <td>L526-594</td>
+        <td>固定 query 搜团搜，取第 1 家 + 前 3 菜品</td>
+      </tr>
+      <tr>
+        <td>Prompt 注入</td>
+        <td><code>PoiSummary.java</code></td>
+        <td><code>buildHealthContext()</code></td>
+        <td>L604-642</td>
+        <td>组装 health_context → 注入 ${health_context} 占位符</td>
+      </tr>
+      <tr>
+        <td>Prompt 调用</td>
+        <td><code>PoiSummary.java</code></td>
+        <td><code>generateChatOnlyPrompt()</code></td>
+        <td>L578-596</td>
+        <td>将 health_context 注入 poi_summary_chat_only_prompt</td>
+      </tr>
+      <tr>
+        <td>上下文传递</td>
+        <td><code>RunnerContext.java</code></td>
+        <td><code>healthGroup</code> / <code>healthExtraStore</code> / <code>healthCoupon</code></td>
+        <td>L329-349</td>
+        <td>在 ReAct 链路中传递健康关怀状态</td>
+      </tr>
+      <tr>
+        <td>Lion 配置</td>
+        <td><code>MdpLionConfig.java</code></td>
+        <td><code>health.care.*</code> 系列</td>
+        <td>L1163-1192</td>
+        <td>所有健康关怀相关的 Lion 配置</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<div style="text-align:center;padding:24px 0;color:#999;font-size:11px">
+  小美人性化营销 · 健康关怀 4 场景开发配置表 · 生成时间 2026-03-31<br>
+  分支：feature/health-care-experiment · 仓库：beam/central-agent
+</div>
+
+</div>
+</body>
+</html>
